@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User Profile</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style type="text/tailwindcss">:root {
+            --card-bg-light: #ffffff;
+            --card-bg-dark: #1F242F;
+            --input-bg-light: #f6f6f8;
+            --input-bg-dark: #2A303C;
+            --input-border-light: #e5e7eb;
+            --input-border-dark: #4b5563;
+            --text-primary-light: #111318;
+            --text-primary-dark: #ffffff;
+            --text-secondary-light: #616e89;
+            --text-secondary-dark: #9ca3af;
+        }
+        .card {
+            @apply bg-[var(--card-bg-light)] dark:bg-[var(--card-bg-dark)] border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm;
+        }
+        .input-field {
+            @apply w-full h-10 px-3 py-2 text-sm bg-[var(--input-bg-light)] dark:bg-[var(--input-bg-dark)] border border-[var(--input-border-light)] dark:border-[var(--input-border-dark)] rounded-lg transition-colors duration-200 ease-in-out focus:ring-2 focus:ring-primary focus:border-primary placeholder-gray-400 dark:placeholder-gray-500;
+        }
+        .btn {
+            @apply flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 text-sm font-bold leading-normal tracking-[0.015em] transition-all duration-200 ease-in-out;
+        }
+        .btn-primary {
+            @apply bg-primary text-white;
+        }
+        .btn-primary:hover:not(:disabled) {
+            @apply transform -translate-y-0.5 shadow-lg;
+        }
+        .btn-primary:active:not(:disabled) {
+            @apply transform scale-[0.98];
+        }
+        .btn-secondary {
+            @apply bg-transparent text-primary border border-primary;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            @apply bg-primary/10 transform -translate-y-0.5 shadow-lg;
+        }
+        .btn-secondary:active:not(:disabled) {
+            @apply transform scale-[0.98];
+        }
+        .btn:disabled {
+            @apply bg-gray-200 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500;
+        }
+        .btn-secondary:disabled {
+            @apply bg-transparent border border-gray-300 dark:border-gray-600;
+        }
+        .btn:focus-visible {
+            @apply ring-2 ring-primary ring-offset-2 dark:ring-offset-background-dark;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#2463eb",
+              "background-light": "#f6f6f8",
+              "background-dark": "#111621",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-[var(--text-primary-light)] dark:text-[var(--text-primary-dark)]">
+<div class="relative flex min-h-screen w-full flex-col">
+<div class="flex h-full grow flex-col">
+<main class="flex-1 px-4 py-8 sm:px-6 md:px-8 md:py-12">
+<div class="mx-auto max-w-4xl">
+<div class="mb-8">
+<h1 class="text-3xl font-bold tracking-tight text-[var(--text-primary-light)] dark:text-[var(--text-primary-dark)] sm:text-4xl">Profile Settings</h1>
+<p class="mt-2 text-base text-[var(--text-secondary-light)] dark:text-[var(--text-secondary-dark)]">Manage your personal information and account settings.</p>
+</div>
+<div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+<div class="lg:col-span-1">
+<div class="flex flex-col gap-8">
+<div class="card p-6 text-center">
+<div class="relative mx-auto mb-4 h-24 w-24">
+<img alt="User Avatar" class="h-full w-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmZYUrmqnVkxED8r4ePCcyLtXK7I1gPVql4izod7n67Alg9Y6XKvoesBg_-Qgsc4na35eS6fZ9riI79frUegIBMDRx2fb1owpyCViVCd4Q-QEnuDDwhm6PjgyhiSUdAG6J3WrkLBe67v81ZF4JMcxNGScirXHwr7QFKCNipqbyt7TO8rH91ovoDz9tcCgMgin-H8VZQ5Qz_NKMRjAxp6EgsSYCIQ-auZN591faJtkIsYh7tHQZgkgTj_A2K0nPBVlnOSqLVYY2LfCr"/>
+<button class="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-[var(--card-bg-dark)]">
+<span class="material-symbols-outlined text-base">edit</span>
+</button>
+</div>
+<h2 class="text-xl font-bold">Alex Thompson</h2>
+<p class="text-sm text-[var(--text-secondary-light)] dark:text-[var(--text-secondary-dark)]">alex.thompson@example.com</p>
+</div>
+<div class="card p-6">
+<h3 class="flex items-center text-lg font-semibold">
+<span class="material-symbols-outlined mr-2 text-xl text-primary">poll</span> My Polls
+                                </h3>
+<p class="mt-2 text-sm text-[var(--text-secondary-light)] dark:text-[var(--text-secondary-dark)]">View and manage the polls you have created or participated in.</p>
+<button class="btn btn-secondary mt-4 w-full">
+<span>Go to Dashboard</span>
+<span class="material-symbols-outlined ml-2 text-base">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<div class="lg:col-span-2">
+<div class="card">
+<div class="border-b border-gray-200 dark:border-gray-700 p-6">
+<h3 class="text-lg font-semibold">Personal Details</h3>
+<p class="mt-1 text-sm text-[var(--text-secondary-light)] dark:text-[var(--text-secondary-dark)]">Update your information here. Changes will be reflected across the platform.</p>
+</div>
+<form class="p-6">
+<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+<div>
+<label class="mb-1.5 block text-sm font-medium" for="first-name">First Name</label>
+<input class="input-field" id="first-name" placeholder="Alex" type="text" value="Alex"/>
+</div>
+<div>
+<label class="mb-1.5 block text-sm font-medium" for="last-name">Last Name</label>
+<input class="input-field" id="last-name" placeholder="Thompson" type="text" value="Thompson"/>
+</div>
+<div class="sm:col-span-2">
+<label class="mb-1.5 block text-sm font-medium" for="email">Email Address</label>
+<input class="input-field" id="email" placeholder="you@example.com" type="email" value="alex.thompson@example.com"/>
+</div>
+</div>
+<div class="mt-6 flex justify-end gap-3">
+<button class="btn btn-secondary" type="button">Cancel</button>
+<button class="btn btn-primary" type="submit">Save Changes</button>
+</div>
+</form>
+</div>
+<div class="card mt-8">
+<div class="border-b border-gray-200 dark:border-gray-700 p-6">
+<h3 class="text-lg font-semibold">Account Settings</h3>
+<p class="mt-1 text-sm text-[var(--text-secondary-light)] dark:text-[var(--text-secondary-dark)]">Manage your account preferences and security.</p>
+</div>
+<div class="divide-y divide-gray-200 dark:divide-gray-700">
+<div class="flex flex-wrap items-center justify-between gap-4 p-6">
+<div>
+<p class="font-medium">Change Password</p>
+<p class="text-sm text-[var(--text-secondary-light)] dark:text-[var(--text-secondary-dark)]">Set a new password for your account.</p>
+</div>
+<button class="btn btn-secondary">Change</button>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-4 p-6">
+<div>
+<p class="font-medium text-red-600 dark:text-red-500">Delete Account</p>
+<p class="text-sm text-[var(--text-secondary-light)] dark:text-[var(--text-secondary-dark)]">Permanently delete your account and all associated data.</p>
+</div>
+<button class="btn border-red-500 text-red-500 hover:bg-red-500/10">Delete</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+
+</body></html>

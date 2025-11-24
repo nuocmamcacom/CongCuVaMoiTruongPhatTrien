@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register - Realtime Voting System</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style type="text/tailwindcss">.btn {
+            @apply flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-4 text-base font-bold leading-normal tracking-[0.015em] transition-all duration-200 ease-in-out;
+        }
+        .btn-primary {
+            @apply bg-primary text-white;
+        }
+        .btn-primary:hover:not(:disabled) {
+            @apply transform -translate-y-0.5 shadow-lg;
+        }
+        .btn-primary:active:not(:disabled) {
+            @apply transform scale-[0.98];
+        }
+        .btn-secondary {
+            @apply bg-transparent text-primary border border-primary;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            @apply bg-primary/10 transform -translate-y-0.5 shadow-lg;
+        }
+        .btn-secondary:active:not(:disabled) {
+            @apply transform scale-[0.98];
+        }
+        .btn:disabled {
+            @apply bg-gray-200 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500;
+        }
+        .btn-secondary:disabled {
+            @apply bg-transparent border border-gray-300 dark:border-gray-600;
+        }
+        .btn:focus-visible {
+            @apply ring-2 ring-primary ring-offset-2 dark:ring-offset-background-dark;
+        }
+        .input-base {
+            @apply w-full h-12 px-4 bg-white dark:bg-background-dark text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-xl text-base placeholder-gray-400 focus:ring-primary focus:border-primary;
+        }
+        .input-error {
+            @apply border-red-500 ring-red-500 focus:border-red-500 focus:ring-red-500;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#2463eb",
+              "background-light": "#f6f6f8",
+              "background-dark": "#111621",
+              "success": "#22c55e",
+              "warning": "#f59e0b",
+              "error": "#ef4444",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark">
+<div class="flex min-h-screen w-full items-center justify-center px-4">
+<div class="w-full max-w-md space-y-8">
+<div class="text-center">
+<h1 class="text-4xl font-black text-gray-900 dark:text-white tracking-[-0.033em]">Create an Account</h1>
+<p class="mt-2 text-base text-gray-600 dark:text-gray-400">Join our real-time voting platform today.</p>
+</div>
+<div class="rounded-2xl bg-white dark:bg-gray-800/50 p-8 shadow-2xl shadow-gray-200/50 dark:shadow-black/20">
+<form action="#" class="space-y-6" method="POST">
+<div>
+<label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="email">Email address</label>
+<div class="mt-1">
+<input aria-describedby="email-error" autocomplete="email" class="input-base" id="email" name="email" placeholder="you@example.com" required="" type="email"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="password">Password</label>
+<div class="mt-1 relative">
+<input aria-describedby="password-strength" autocomplete="new-password" class="input-base pr-10" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+<button aria-label="Show password" class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500" type="button">
+<span class="material-symbols-outlined text-xl">visibility_off</span>
+</button>
+</div>
+<div class="mt-2 space-y-1" id="password-strength">
+<p class="text-sm text-gray-500 dark:text-gray-400">Password strength:</p>
+<div class="flex items-center gap-2">
+<div class="h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
+<div class="h-2 rounded-full bg-warning w-1/2"></div>
+</div>
+<span class="text-sm font-medium text-warning">Medium</span>
+</div>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="confirm-password">Confirm Password</label>
+<div class="mt-1">
+<input aria-describedby="password-mismatch-error" autocomplete="new-password" class="input-base input-error" id="confirm-password" name="confirm-password" placeholder="••••••••" required="" type="password"/>
+</div>
+<p class="mt-2 text-sm text-error" id="password-mismatch-error">Passwords do not match.</p>
+</div>
+<div class="flex items-center">
+<input class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" id="terms" name="terms" type="checkbox"/>
+<label class="ml-2 block text-sm text-gray-900 dark:text-gray-300" for="terms">I agree to the <a class="font-medium text-primary hover:underline" href="#">Terms of Service</a></label>
+</div>
+<div>
+<button class="btn btn-primary w-full" type="submit">
+                            Register
+                        </button>
+</div>
+</form>
+<div class="mt-6">
+<div class="relative">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
+</div>
+<div class="relative flex justify-center text-sm">
+<span class="bg-white dark:bg-gray-800 px-2 text-gray-500 dark:text-gray-400">Or continue with</span>
+</div>
+</div>
+<div class="mt-6">
+<button class="w-full btn btn-secondary" type="button">
+<svg aria-hidden="true" class="mr-3 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+<path clip-rule="evenodd" d="M6.29 5.23a.87.87 0 0 1 1.23 0l2.47 2.47V5.41a.87.87 0 0 1 1.74 0v5.1a.87.87 0 0 1-.87.87h-5.1a.87.87 0 0 1 0-1.74h2.29L5.06 6.46a.87.87 0 0 1 0-1.23Z M13.71 14.77a.87.87 0 0 1-1.23 0L10 12.3V14.6a.87.87 0 0 1-1.74 0V9.5a.87.87 0 0 1 .87-.87h5.1a.87.87 0 1 1 0 1.74h-2.29l2.47 2.47a.87.87 0 0 1 0 1.23Z" fill-rule="evenodd" transform="translate(10 10) scale(1.9) translate(-10 -10)"></path><path clip-rule="evenodd" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm-1.28 12.56a.88.88 0 0 1-1.25 0l-2.8-2.8a.88.88 0 0 1 1.25-1.25l2.18 2.18 4.92-4.92a.88.88 0 1 1 1.25 1.25l-5.55 5.55Z" fill-rule="evenodd" transform="translate(10 10) scale(1.9) translate(-10 -10)"></path><path d="M10 20a10 10 0 1 0 0-20 10 10 0 0 0 0 20Zm0-2a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z"></path><path d="M9.99 15.8a5.8 5.8 0 1 0 0-11.6 5.8 5.8 0 0 0 0 11.6Zm0-1.74a4.06 4.06 0 1 1 0-8.12 4.06 4.06 0 0 1 0 8.12Z"></path><path d="M10 11.74a1.74 1.74 0 1 0 0-3.48 1.74 1.74 0 0 0 0 3.48Z"></path>
+</svg>
+<span class="text-primary dark:text-primary">Register with Google</span>
+</button>
+</div>
+</div>
+</div>
+<p class="text-center text-sm text-gray-600 dark:text-gray-400">
+                Already have an account?
+                <a class="font-medium text-primary hover:underline" href="#">
+                    Log in
+                </a>
+</p>
+</div>
+</div>
+
+</body></html>

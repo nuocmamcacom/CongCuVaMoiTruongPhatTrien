@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
+const connectDB = require('./config/database');
 const { initializeSocket } = require('./services/socketService');
 
 // Import routes
@@ -16,10 +17,17 @@ const userRoutes = require('./routes/users');
 const app = express();
 const server = http.createServer(app);
 
+// Connect to MongoDB
+connectDB();
+
 // Socket.IO setup
 const io = socketIo(server, {
     cors: {
-        origin: process.env.CORS_ORIGIN,
+        origin: [
+            process.env.CORS_ORIGIN,
+            'http://localhost:3000', 
+            'http://localhost:3001'
+        ],
         methods: ["GET", "POST"],
         credentials: true
     }
@@ -31,7 +39,11 @@ initializeSocket(io);
 // Middleware
 app.use(helmet());
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: [
+        process.env.CORS_ORIGIN,
+        'http://localhost:3000', 
+        'http://localhost:3001'
+    ],
     credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
