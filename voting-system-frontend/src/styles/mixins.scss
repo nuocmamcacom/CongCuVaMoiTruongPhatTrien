@@ -1,0 +1,233 @@
+// SCSS Mixins for common patterns
+
+// Flexbox helpers
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// Button mixins
+@mixin button-base {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 84px;
+  height: 40px;
+  padding: 0 var(--space-4);
+  font-family: var(--font-display);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  border-radius: var(--radius-xl);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-all);
+  text-decoration: none;
+  overflow: hidden;
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+}
+
+@mixin button-hover-lift {
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  background: var(--primary);
+  color: var(--text-white);
+
+  &:hover:not(:disabled) {
+    background: var(--primary-600);
+  }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+
+  &:hover:not(:disabled) {
+    background: var(--primary-50);
+  }
+}
+
+// Card mixins
+@mixin card-base {
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-all);
+}
+
+@mixin card-hover {
+  &:hover {
+    border-color: var(--primary-200);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+// Input mixins
+@mixin input-base {
+  width: 100%;
+  height: 40px;
+  padding: 0 var(--space-4);
+  font-family: var(--font-display);
+  font-size: var(--font-size-sm);
+  background: var(--bg-white);
+  border: 1px solid var(--border-gray-300);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-all);
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  }
+
+  &:disabled {
+    background: var(--bg-gray-50);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+}
+
+@mixin input-error {
+  border-color: var(--error);
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+}
+
+// Text mixins
+@mixin text-heading($size: 'xl') {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  line-height: var(--line-height-tight);
+  
+  @if $size == 'sm' {
+    font-size: var(--font-size-lg);
+  } @else if $size == 'md' {
+    font-size: var(--font-size-xl);
+  } @else if $size == 'lg' {
+    font-size: var(--font-size-2xl);
+  } @else if $size == 'xl' {
+    font-size: var(--font-size-3xl);
+  } @else if $size == '2xl' {
+    font-size: var(--font-size-4xl);
+  }
+}
+
+@mixin text-body($size: 'base') {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-normal);
+  color: var(--text-primary);
+  line-height: var(--line-height-normal);
+  
+  @if $size == 'sm' {
+    font-size: var(--font-size-sm);
+  } @else if $size == 'base' {
+    font-size: var(--font-size-base);
+  } @else if $size == 'lg' {
+    font-size: var(--font-size-lg);
+  }
+}
+
+@mixin text-muted($size: 'sm') {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-normal);
+  color: var(--text-secondary);
+  line-height: var(--line-height-normal);
+  
+  @if $size == 'xs' {
+    font-size: var(--font-size-xs);
+  } @else if $size == 'sm' {
+    font-size: var(--font-size-sm);
+  } @else if $size == 'base' {
+    font-size: var(--font-size-base);
+  }
+}
+
+// Layout mixins
+@mixin container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+
+  @media (min-width: 640px) {
+    padding: 0 var(--space-6);
+  }
+
+  @media (min-width: 1024px) {
+    padding: 0 var(--space-8);
+  }
+}
+
+@mixin grid($columns: 1, $gap: var(--space-6)) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  gap: $gap;
+}
+
+// Responsive breakpoints
+@mixin mobile-only {
+  @media (max-width: 639px) {
+    @content;
+  }
+}
+
+@mixin tablet-up {
+  @media (min-width: 640px) {
+    @content;
+  }
+}
+
+@mixin desktop-up {
+  @media (min-width: 1024px) {
+    @content;
+  }
+}
+
+@mixin large-desktop-up {
+  @media (min-width: 1280px) {
+    @content;
+  }
+}
