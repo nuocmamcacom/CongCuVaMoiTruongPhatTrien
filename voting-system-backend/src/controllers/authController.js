@@ -58,7 +58,6 @@ const register = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Register error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'
@@ -117,7 +116,6 @@ const login = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Login error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'
@@ -164,7 +162,6 @@ const searchUsers = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Search users error:', error);
         res.status(500).json({
             success: false,
             message: error.message || 'Internal server error'
@@ -197,7 +194,6 @@ const getUserById = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Get user by ID error:', error);
         res.status(500).json({
             success: false,
             message: error.message || 'Internal server error'

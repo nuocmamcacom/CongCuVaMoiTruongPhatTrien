@@ -21,6 +21,7 @@
     "socket.io": "^4.7.2"
   },
   "devDependencies": {
+    "@express-rate-limit/tsconfig": "^1.0.2",
     "concurrently": "^8.2.0",
     "nodemon": "^3.0.1"
   }

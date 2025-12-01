@@ -14,9 +14,7 @@ const PollDetails = () => {
     const [voting, setVoting] = useState(false);
 
     useEffect(() => {
-        console.log('PollDetails pollId:', pollId); // Log pollId
-        if (!pollId || isNaN(pollId)) {
-            console.error('Invalid pollId:', pollId);
+        if (!pollId || typeof pollId !== 'string') {
             toast.error('Invalid poll ID');
             setLoading(false);
             navigate('/dashboard');
@@ -28,7 +26,6 @@ const PollDetails = () => {
                 setLoading(false);
             })
             .catch((error) => {
-                console.error('Poll fetch error:', error);
                 toast.error(error.response?.data?.message || 'Failed to load poll');
                 setLoading(false);
                 navigate('/dashboard');
@@ -43,8 +40,8 @@ const PollDetails = () => {
         setVoting(true);
         try {
             await pollAPI.castVote({
-                poll_id: Number(pollId),
-                option_id: pollData.poll.poll_type === 'single' ? optionIds : optionIds.map(id => ({ option_id: id })),
+                poll_id: pollId,
+                option_id: pollData.poll.poll_type === 'single' ? optionIds : optionIds,
             });
             toast.success('Vote submitted successfully!');
             const response = await pollAPI.getPollDetails(pollId);

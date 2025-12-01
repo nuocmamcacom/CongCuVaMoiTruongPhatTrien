@@ -70,9 +70,7 @@ export const AuthProvider = ({ children }) => {
             payload: { token, user: parsedUser },
           });
           
-          console.log('Auth initialized successfully');
         } catch (error) {
-          console.warn('Auth initialization failed:', error.message);
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           toast.error('Phiên đăng nhập không hợp lệ, vui lòng đăng nhập lại');
@@ -126,9 +124,6 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
   try {
     const response = await authAPI.register(userData);
-
-    // 👇 Log ra để kiểm tra cấu trúc thật sự
-    console.log('📦 Register response:', response.data);
 
     const { token, user } = response.data; // ✅ Không phải response.data.data
 

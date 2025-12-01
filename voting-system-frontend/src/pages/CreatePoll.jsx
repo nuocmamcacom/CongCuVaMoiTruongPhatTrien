@@ -39,14 +39,14 @@ const CreatePoll = () => {
         const res = await userAPI.searchUsers(query);
         const filtered = res.data.filter(u => u.user_id !== user.user_id);
         setSearchResults(filtered);
-      } catch {
+      } catch (searchError) {
         try {
           const res = await userAPI.getAllUsers();
           const users = Array.isArray(res.data) ? res.data : res.data.data || [];
           const filtered = users.filter((u) => u.user_id !== user.user_id);
           setSearchResults(filtered);
         } catch (error) {
-          console.error('Search error:', error);
+          // Search error handled silently
         }
       } finally {
         setSearchLoading(false);

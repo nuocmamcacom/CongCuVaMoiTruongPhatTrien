@@ -152,6 +152,69 @@
   to { transform: rotate(360deg); }
 }
 
+.login__divider {
+  position: relative;
+  margin: var(--space-6) 0;
+  text-align: center;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--secondary-200);
+  }
+}
+
+.login__divider-text {
+  background: var(--bg-white);
+  padding: 0 var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  font-weight: var(--font-medium);
+}
+
+.login__google-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6);
+  background: white;
+  border: 2px solid var(--secondary-200);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-duration) var(--transition-timing);
+  margin-bottom: var(--space-4);
+
+  &:hover {
+    border-color: var(--secondary-300);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-300);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+}
+
+.login__google-icon {
+  flex-shrink: 0;
+}
+
 .login__footer {
   margin-top: var(--space-8);
   text-align: center;

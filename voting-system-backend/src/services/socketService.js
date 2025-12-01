@@ -4,22 +4,18 @@ const initializeSocket = (socketIO) => {
     io = socketIO;
     
     io.on('connection', (socket) => {
-        console.log(`User connected: ${socket.id}`);
 
         // Join poll room
-        socket.on('join-poll', (pollId) => {
+        socket.on('joinPoll', (pollId) => {
             socket.join(`poll-${pollId}`);
-            console.log(`User ${socket.id} joined poll room: poll-${pollId}`);
         });
 
         // Leave poll room
-        socket.on('leave-poll', (pollId) => {
+        socket.on('leavePoll', (pollId) => {
             socket.leave(`poll-${pollId}`);
-            console.log(`User ${socket.id} left poll room: poll-${pollId}`);
         });
 
         socket.on('disconnect', () => {
-            console.log(`User disconnected: ${socket.id}`);
         });
     });
 };

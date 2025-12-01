@@ -9,7 +9,7 @@ const socketService = {
         withCredentials: true,
       });
       this.socket.on('connect', () => {
-        console.log('Connected to socket server');
+        // Connected to socket server
       });
     }
   },
