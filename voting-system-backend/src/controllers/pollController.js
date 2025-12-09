@@ -352,3 +352,4 @@ module.exports = {
     castVote,
     exportPollToExcel
 };
+// PUT and DELETE endpoints added
