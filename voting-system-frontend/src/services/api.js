@@ -23,9 +23,8 @@ export const authAPI = {
 export const pollAPI = {
   getPolls: () => api.get('/polls'),
   getPollDetails: (pollId) => {
-    console.log('Calling getPollDetails with pollId:', pollId); // Log pollId
-    if (!pollId || isNaN(pollId)) {
-      throw new Error('Invalid pollId: must be a number');
+    if (!pollId || typeof pollId !== 'string') {
+      throw new Error('Invalid pollId: must be a string');
     }
     return api.get(`/polls/${pollId}`);
   },
@@ -36,12 +35,9 @@ export const pollAPI = {
 // api.js - thêm function này
 export const getAllUsers = async () => {
   try {
-    console.log('🚀 Getting all users...');
     const response = await api.get('/users'); // hoặc '/users/all'
-    console.log('✅ Users loaded:', response.data);
     return response.data;
   } catch (error) {
-    console.error('❌ Get all users error:', error.response?.data);
     throw error;
   }
 };
@@ -53,13 +49,6 @@ export const userAPI = {
 // Thêm vào api.js
 api.interceptors.request.use(
   (config) => {
-    console.log('🚀 Request:', {
-      url: config.url,
-      method: config.method,
-      data: config.data,
-      headers: config.headers
-    });
-    
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -67,23 +56,16 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
-    console.error('❌ Request Error:', error);
     return Promise.reject(error);
   }
 );
 
-// Thêm response interceptor để debug
+// Response interceptor
 api.interceptors.response.use(
   (response) => {
-    console.log('✅ Response:', response);
     return response;
   },
   (error) => {
-    console.error('❌ Response Error:', {
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message
-    });
     return Promise.reject(error);
   }
 );

@@ -35,6 +35,16 @@ const userSchema = new mongoose.Schema({
     is_active: {
         type: Boolean,
         default: true
+    },
+    // Google OAuth fields
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
+    avatar: {
+        type: String,
+        default: null
     }
 }, {
     timestamps: {

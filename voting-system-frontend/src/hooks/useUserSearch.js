@@ -32,7 +32,6 @@ export const useUserSearch = (excludeUserId) => {
 
         setResults(filtered);
       } catch (err) {
-        console.error('❌ Lỗi tìm user:', err);
         toast.error('Không thể tìm người dùng');
       } finally {
         setLoading(false);

@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const passport = require('passport');
 const User = require('../models/User');
 
 const register = async (req, res) => {
@@ -58,7 +59,6 @@ const register = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Register error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'
@@ -117,7 +117,6 @@ const login = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Login error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'
@@ -164,7 +163,6 @@ const searchUsers = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Search users error:', error);
         res.status(500).json({
             success: false,
             message: error.message || 'Internal server error'
@@ -197,7 +195,6 @@ const getUserById = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Get user by ID error:', error);
         res.status(500).json({
             success: false,
             message: error.message || 'Internal server error'
@@ -205,5 +202,53 @@ const getUserById = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getUserById, searchUsers };
+// Google OAuth handlers
+const googleAuth = (req, res, next) => {
+    passport.authenticate('google', {
+        scope: ['profile', 'email']
+    })(req, res, next);
+};
+
+const googleCallback = (req, res, next) => {
+    passport.authenticate('google', { session: false }, (err, user) => {
+        if (err) {
+            console.error('Google OAuth Error:', err);
+            return res.redirect(`${process.env.CORS_ORIGIN}/login?error=auth_error`);
+        }
+        
+        if (!user) {
+            return res.redirect(`${process.env.CORS_ORIGIN}/login?error=auth_failed`);
+        }
+
+        try {
+            // Generate JWT token
+            const token = jwt.sign(
+                {
+                    user_id: user._id,
+                    username: user.username,
+                    role: user.role
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: process.env.JWT_EXPIRE }
+            );
+
+            // Redirect to frontend with token
+            const userData = {
+                user_id: user._id,
+                username: user.username,
+                email: user.email,
+                full_name: user.full_name,
+                role: user.role,
+                avatar: user.avatar
+            };
+            
+            res.redirect(`${process.env.CORS_ORIGIN}/login?token=${token}&user=${encodeURIComponent(JSON.stringify(userData))}`);
+        } catch (error) {
+            console.error('Token generation error:', error);
+            res.redirect(`${process.env.CORS_ORIGIN}/login?error=auth_error`);
+        }
+    })(req, res, next);
+};
+
+module.exports = { register, login, getUserById, searchUsers, googleAuth, googleCallback };
 

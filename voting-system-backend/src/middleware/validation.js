@@ -37,7 +37,7 @@ const validateCreatePoll = (req, res, next) => {
         start_time: Joi.date().iso().allow(null),
         end_time: Joi.date().iso().greater(Joi.ref('start_time')).allow(null),
         options: Joi.array().items(Joi.string().min(1).max(500)).min(2).max(10).required(),
-        participants: Joi.array().items(Joi.number().integer().positive()).min(1).required()
+        participants: Joi.array().items(Joi.string().pattern(/^[0-9a-fA-F]{24}$/)).min(1).required()
     });
 
     const { error } = schema.validate(req.body);
@@ -49,8 +49,8 @@ const validateCreatePoll = (req, res, next) => {
 
 const validateVote = (req, res, next) => {
     const schema = Joi.object({
-        poll_id: Joi.number().integer().positive().required(),
-        option_id: Joi.number().integer().positive().required()
+        poll_id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
+        option_id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required()
     });
 
     const { error } = schema.validate(req.body);

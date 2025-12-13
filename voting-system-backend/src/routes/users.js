@@ -1,165 +1,84 @@
 const express = require('express');
 const router = express.Router();
-const { sql, getPool } = require('../config/database');
 const { auth } = require('../middleware/auth');
-const { validateUserId } = require('../middleware/validateUserId');
+const { searchUsers, getUserById } = require('../controllers/authController');
+const User = require('../models/User');
+
+// Search users route - must be before /:id route to avoid conflicts
+router.get('/search', auth, searchUsers);
 
 // GET all users except current user
 router.get('/', auth, async (req, res) => {
   try {
-    const pool = await getPool();
-    const result = await pool.request()
-      .input('current_user_id', sql.Int, req.user.user_id)
-      .query(`
-        SELECT user_id, username, email, full_name, created_at
-        FROM users
-        WHERE user_id != @current_user_id
-        ORDER BY username ASC
-      `);
+    const users = await User.find({
+      _id: { $ne: req.user.user_id }
+    })
+    .select('_id username email full_name createdAt')
+    .sort({ username: 1 });
 
-    res.json({ success: true, data: result.recordset });
+    // Transform to match frontend expectations
+    const formattedUsers = users.map(user => ({
+      user_id: user._id,
+      username: user.username,
+      email: user.email,
+      full_name: user.full_name,
+      created_at: user.createdAt
+    }));
+
+    res.json({ success: true, data: formattedUsers });
   } catch (error) {
-    console.error('Get users error:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
 
 // GET user by ID
-router.get('/:id', auth, validateUserId, async (req, res) => {
-  try {
-    const pool = await getPool();
-    const result = await pool.request()
-      .input('user_id', sql.Int, req.params.id)
-      .query(`
-        SELECT user_id, username, email, full_name, created_at
-        FROM users
-        WHERE user_id = @user_id
-      `);
-
-    if (result.recordset.length === 0) {
-      return res.status(404).json({ success: false, message: 'User not found' });
-    }
-
-    res.json({ success: true, data: result.recordset[0] });
-  } catch (error) {
-    console.error('Get user by ID error:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-});
+router.get('/:id', auth, getUserById);
 
 // PUT update current user's profile
 router.put('/profile', auth, async (req, res) => {
   try {
+    const userId = req.user.user_id;
     const { username, email, full_name } = req.body;
-    const userId = parseInt(req.user.user_id);
 
     if (!username || !email) {
       return res.status(400).json({ success: false, message: 'Username and email are required' });
     }
 
-    const pool = await getPool();
+    // Check if username or email already exists for other users
+    const existingUser = await User.findOne({
+      $and: [
+        { _id: { $ne: userId } },
+        { $or: [{ username }, { email }] }
+      ]
+    });
 
-    const existingUser = await pool.request()
-      .input('username', sql.NVarChar, username)
-      .input('email', sql.NVarChar, email)
-      .input('current_user_id', sql.Int, userId)
-      .query(`
-        SELECT user_id FROM users
-        WHERE (username = @username OR email = @email)
-        AND user_id != @current_user_id
-      `);
-
-    if (existingUser.recordset.length > 0) {
+    if (existingUser) {
       return res.status(400).json({ success: false, message: 'Username or email already exists' });
     }
 
-    const result = await pool.request()
-      .input('user_id', sql.Int, userId)
-      .input('username', sql.NVarChar, username)
-      .input('email', sql.NVarChar, email)
-      .input('full_name', sql.NVarChar, full_name || null)
-      .query(`
-        UPDATE users
-        SET username = @username,
-            email = @email,
-            full_name = @full_name,
-            updated_at = GETDATE()
-        WHERE user_id = @user_id
-      `);
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { username, email, full_name },
+      { new: true, runValidators: true }
+    ).select('_id username email full_name');
 
-    if (result.rowsAffected[0] === 0) {
+    if (!updatedUser) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    res.json({ success: true, message: 'Profile updated successfully' });
+    res.json({ 
+      success: true, 
+      message: 'Profile updated successfully',
+      data: {
+        user_id: updatedUser._id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        full_name: updatedUser.full_name
+      }
+    });
   } catch (error) {
-    console.error('Update profile error:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
-
-// GET search users by keyword
-const searchUsers = async (req, res) => {
-    try {
-        const searchTerm = req.query.q;
-        console.log('Search term received:', searchTerm); // Log để debug
-
-        // Validate search term
-        if (!searchTerm || typeof searchTerm !== 'string' || searchTerm.trim() === '') {
-            return res.status(400).json({
-                success: false,
-                message: 'Search term is required and must be a non-empty string'
-            });
-        }
-
-        const currentUserId = req.user?.user_id; // Đảm bảo req.user tồn tại
-        if (!currentUserId || isNaN(parseInt(currentUserId, 10))) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid current user ID'
-            });
-        }
-
-        const pool = await getPool();
-        // Trong hàm searchUsers, thêm log:
-        console.log('URL yêu cầu:', url);
-        console.log('Headers:', headers);
-        console.log('Dữ liệu gửi:', requestBody);
-        console.log('Pool status for search:', pool ? 'valid' : 'invalid');
-
-        if (!pool) {
-            throw new Error('Database connection failed');
-        }
-
-        const result = await pool.request()
-            .input('search_term', sql.NVarChar, `%${searchTerm.trim()}%`)
-            .input('current_user_id', sql.Int, parseInt(currentUserId, 10))
-            .query(`
-                SELECT user_id, username, email, full_name 
-                FROM Users 
-                WHERE user_id != @current_user_id
-                AND (
-                    username LIKE @search_term 
-                    OR email LIKE @search_term 
-                    OR full_name LIKE @search_term
-                )
-                ORDER BY username ASC
-            `);
-        
-        console.log('Search results:', result.recordset);
-        res.json({
-            success: true,
-            data: result.recordset
-        });
-
-    } catch (error) {
-        console.error('Search users error:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message || 'Internal server error'
-        });
-    }
-};
-router.get('/search', auth, searchUsers);
 
 module.exports = router;

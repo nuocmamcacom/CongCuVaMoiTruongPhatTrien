@@ -20,8 +20,7 @@ const Dashboard = () => {
 
         socketService.connect();
         socketService.onNewPoll((newPoll) => {
-            if (!newPoll.poll_id || isNaN(newPoll.poll_id)) {
-                console.error('Invalid newPoll poll_id:', newPoll.poll_id);
+            if (!newPoll.poll_id || typeof newPoll.poll_id !== 'string') {
                 return;
             }
             setPolls(prev => [newPoll, ...prev]);
@@ -38,24 +37,12 @@ const Dashboard = () => {
   try {
     setLoading(true);
     const response = await pollAPI.getPolls();
-    console.log('Polls response full:', response); // Log toàn bộ response
-    console.log('Polls data:', response.data); // Log data thô
     // Xử lý cả trường hợp response.data là mảng hoặc object có data
     const pollData = Array.isArray(response.data) ? response.data : response.data.data || response.data;
-    console.log('Processed pollData:', pollData); // Log sau xử lý
-    // Log từng phần tử để kiểm tra định dạng
-    pollData.forEach((poll, index) => {
-      console.log(`Poll ${index}:`, poll);
-    });
-    const validPolls = pollData.filter(poll => poll && poll.poll_id && !isNaN(poll.poll_id));
-    console.log('Valid polls after filter:', validPolls); // Log sau filter
-    if (validPolls.length === 0) {
-      console.warn('No valid polls found after filter. Raw data:', pollData);
-    }
+    const validPolls = pollData.filter(poll => poll && poll.poll_id && typeof poll.poll_id === 'string');
     setPolls(validPolls);
   } catch (error) {
     const message = error.response?.data?.message || 'Không thể tải danh sách bình chọn';
-    console.error('Poll fetch error:', error.response?.data || error.message);
     setError(message);
     toast.error(message);
   } finally {

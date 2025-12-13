@@ -13,8 +13,8 @@ const router = express.Router();
 // Middleware để validate poll_id
 const validatePollId = (req, res, next) => {
     const { poll_id } = req.params;
-    if (!poll_id || isNaN(poll_id)) {
-        return res.status(400).json({ message: 'Invalid poll_id. Must be a number.' });
+    if (!poll_id || typeof poll_id !== 'string' || poll_id.length !== 24) {
+        return res.status(400).json({ message: 'Invalid poll_id. Must be a valid ObjectId.' });
     }
     next();
 };

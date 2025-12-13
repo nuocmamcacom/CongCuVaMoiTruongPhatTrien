@@ -46,7 +46,6 @@ const createPoll = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Create poll error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'
@@ -87,7 +86,6 @@ const getPolls = async (req, res) => {
         res.json(formattedPolls);
 
     } catch (error) {
-        console.error('Get polls error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'
@@ -171,7 +169,6 @@ const getPollDetails = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Get poll details error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'
@@ -279,7 +276,6 @@ const castVote = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Cast vote error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'

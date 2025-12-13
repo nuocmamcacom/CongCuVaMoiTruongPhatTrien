@@ -25,8 +25,8 @@ const VotingInterface = ({ options, pollType, onVote, voting }) => {
     }
     onVote(
       pollType === 'single'
-        ? Number(selectedOptions[0])
-        : selectedOptions.map(Number)
+        ? selectedOptions[0]
+        : selectedOptions
     );
   };
 
