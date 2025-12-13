@@ -353,3 +353,5 @@ module.exports = {
     exportPollToExcel
 };
 // PUT and DELETE endpoints added
+/ /   D y n a m i c   Q u e s t i o n C a r d   c o m p o n e n t   c r e a t e d  
+ 
