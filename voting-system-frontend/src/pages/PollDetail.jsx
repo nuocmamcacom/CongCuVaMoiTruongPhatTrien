@@ -39,14 +39,27 @@ const PollDetails = () => {
         }
         setVoting(true);
         try {
+            // Prepare option_id based on poll type
+            let optionId;
+            if (pollData.poll.poll_type === 'single') {
+                // For single choice, send just the string ID
+                optionId = String(optionIds);
+            } else {
+                // For multiple choice, send array of string IDs  
+                optionId = Array.isArray(optionIds) 
+                    ? optionIds.map(id => String(id))
+                    : [String(optionIds)];
+            }
+            
             await pollAPI.castVote({
                 poll_id: pollId,
-                option_id: pollData.poll.poll_type === 'single' ? optionIds : optionIds,
+                option_id: optionId,
             });
             toast.success('Vote submitted successfully!');
             const response = await pollAPI.getPollDetails(pollId);
             setPollData(response.data);
         } catch (error) {
+            console.error('Vote error:', error);
             toast.error(error.response?.data?.message || 'Failed to submit vote');
         } finally {
             setVoting(false);

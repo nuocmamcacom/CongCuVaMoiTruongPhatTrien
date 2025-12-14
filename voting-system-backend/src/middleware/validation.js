@@ -50,7 +50,10 @@ const validateCreatePoll = (req, res, next) => {
 const validateVote = (req, res, next) => {
     const schema = Joi.object({
         poll_id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
-        option_id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required()
+        option_id: Joi.alternatives().try(
+            Joi.string().pattern(/^[0-9a-fA-F]{24}$/),
+            Joi.array().items(Joi.string().pattern(/^[0-9a-fA-F]{24}$/))
+        ).required()
     });
 
     const { error } = schema.validate(req.body);

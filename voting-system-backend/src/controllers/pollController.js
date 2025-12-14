@@ -1,6 +1,7 @@
 const Poll = require('../models/Poll');
 const Vote = require('../models/Vote');
 const { broadcastPollUpdate } = require('../services/socketService');
+const excelService = require('../services/excelService');
 const mongoose = require('mongoose');
 
 const createPoll = async (req, res) => {
@@ -182,12 +183,25 @@ const castVote = async (req, res) => {
         const user_id = req.user.user_id;
         const ip_address = req.ip;
 
+        // Normalize option_id to array for consistent processing
+        const optionIds = Array.isArray(option_id) ? option_id : [option_id];
+
         // Validate IDs
-        if (!mongoose.Types.ObjectId.isValid(poll_id) || !mongoose.Types.ObjectId.isValid(option_id)) {
+        if (!mongoose.Types.ObjectId.isValid(poll_id)) {
             return res.status(400).json({
                 success: false,
-                message: 'Invalid poll or option ID'
+                message: 'Invalid poll ID'
             });
+        }
+
+        // Validate all option IDs
+        for (const optId of optionIds) {
+            if (!mongoose.Types.ObjectId.isValid(optId)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid option ID: ' + optId
+                });
+            }
         }
 
         // Find poll
@@ -215,47 +229,62 @@ const castVote = async (req, res) => {
             });
         }
 
-        // Check if option exists in poll
-        const optionExists = poll.options.some(opt => opt._id.toString() === option_id);
-        if (!optionExists) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid option'
-            });
-        }
-
-        // Check if user already voted (for single choice polls)
-        if (poll.poll_type === 'single') {
-            const existingVote = await Vote.findOne({
-                poll_id: poll_id,
-                user_id: user_id
-            });
-
-            if (existingVote) {
+        // Check if all options exist in poll
+        for (const optId of optionIds) {
+            const optionExists = poll.options.some(opt => opt._id.toString() === optId);
+            if (!optionExists) {
                 return res.status(400).json({
                     success: false,
-                    message: 'You have already voted in this poll'
+                    message: 'Invalid option: ' + optId
                 });
             }
         }
 
-        // Create vote
-        const newVote = new Vote({
-            poll_id,
-            user_id,
-            option_id,
-            ip_address
+        // For single choice polls, only allow one option
+        if (poll.poll_type === 'single' && optionIds.length > 1) {
+            return res.status(400).json({
+                success: false,
+                message: 'Only one option allowed for single choice polls'
+            });
+        }
+
+        // Check if user already voted
+        const existingVotes = await Vote.find({
+            poll_id: poll_id,
+            user_id: user_id
         });
 
-        await newVote.save();
-
-        // Update poll option vote count
-        const optionIndex = poll.options.findIndex(opt => opt._id.toString() === option_id);
-        if (optionIndex !== -1) {
-            poll.options[optionIndex].vote_count += 1;
-            poll.total_votes += 1;
-            await poll.save();
+        if (existingVotes.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'You have already voted in this poll'
+            });
         }
+
+        // Create votes for each selected option
+        const votes = [];
+        for (const optId of optionIds) {
+            const newVote = new Vote({
+                poll_id,
+                user_id,
+                option_id: optId,
+                ip_address
+            });
+            votes.push(newVote);
+        }
+
+        // Save all votes
+        await Vote.insertMany(votes);
+
+        // Update poll option vote counts
+        for (const optId of optionIds) {
+            const optionIndex = poll.options.findIndex(opt => opt._id.toString() === optId);
+            if (optionIndex !== -1) {
+                poll.options[optionIndex].vote_count += 1;
+                poll.total_votes += 1;
+            }
+        }
+        await poll.save();
 
         // Get updated results
         const totalVotes = poll.total_votes;
@@ -283,9 +312,43 @@ const castVote = async (req, res) => {
     }
 };
 
+const exportPollToExcel = async (req, res) => {
+    try {
+        const { pollId } = req.params;
+        
+        // Poll already verified by checkCreator middleware
+        const poll = req.poll;
+        
+        // Generate Excel workbook
+        const workbook = await excelService.createPollExcelReport(pollId);
+        
+        // Generate buffer
+        const buffer = await excelService.generateBuffer(workbook);
+        
+        // Generate filename
+        const filename = excelService.generateFileName(poll.title);
+        
+        // Set response headers for file download
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.setHeader('Content-Length', buffer.length);
+        
+        // Send file
+        res.send(buffer);
+        
+    } catch (error) {
+        console.error('Export Excel error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to export Excel file'
+        });
+    }
+};
+
 module.exports = {
     createPoll,
     getPolls,
     getPollDetails,
-    castVote
+    castVote,
+    exportPollToExcel
 };

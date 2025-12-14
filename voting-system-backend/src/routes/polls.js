@@ -3,10 +3,12 @@ const {
     createPoll, 
     getPolls, 
     getPollDetails, 
-    castVote 
+    castVote,
+    exportPollToExcel 
 } = require('../controllers/pollController');
 const { auth } = require('../middleware/auth');
 const { validateCreatePoll, validateVote } = require('../middleware/validation');
+const { checkCreator } = require('../middleware/checkCreator');
 
 const router = express.Router();
 
@@ -26,5 +28,8 @@ router.post('/', validateCreatePoll, createPoll);
 router.get('/', getPolls);
 router.get('/:poll_id', validatePollId, getPollDetails);
 router.post('/vote', validateVote, castVote);
+
+// Export Excel - requires creator permission
+router.get('/:pollId/export', checkCreator, exportPollToExcel);
 
 module.exports = router;
