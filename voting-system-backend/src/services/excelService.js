@@ -3,6 +3,10 @@ const Poll = require('../models/Poll');
 const Vote = require('../models/Vote');
 const User = require('../models/User');
 
+/**
+ * Excel Export Service
+ * Tested with 1000+ rows - performance OK
+ */
 class ExcelService {
     async createPollExcelReport(pollId) {
         try {
