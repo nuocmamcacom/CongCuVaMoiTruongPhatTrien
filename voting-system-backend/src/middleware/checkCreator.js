@@ -2,11 +2,13 @@ const Poll = require('../models/Poll');
 
 const checkCreator = async (req, res, next) => {
     try {
-        const { pollId } = req.params;
+        const { poll_id } = req.params; // Changed from pollId to poll_id
         const userId = req.user.user_id;
+        
+        console.log('CheckCreator middleware:', { poll_id, userId }); // Debug log
 
         // Find the poll
-        const poll = await Poll.findById(pollId);
+        const poll = await Poll.findById(poll_id);
         
         if (!poll) {
             return res.status(404).json({

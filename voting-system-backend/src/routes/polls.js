@@ -30,6 +30,6 @@ router.get('/:poll_id', validatePollId, getPollDetails);
 router.post('/vote', validateVote, castVote);
 
 // Export Excel - requires creator permission
-router.get('/:pollId/export', checkCreator, exportPollToExcel);
+router.get('/:poll_id/export', validatePollId, checkCreator, exportPollToExcel);
 
 module.exports = router;

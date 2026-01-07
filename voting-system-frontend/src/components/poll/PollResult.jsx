@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { pollAPI } from '../../services/api';
+import toast from 'react-hot-toast';
 
 // Add CSS animation for shine effect
 const styles = `
   @keyframes shine {
     0% { transform: translateX(-100%); }
     100% { transform: translateX(100%); }
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 `;
 
@@ -16,7 +23,55 @@ if (typeof document !== 'undefined' && !document.getElementById('poll-results-st
   document.head.appendChild(styleSheet);
 }
 
-const PollResults = ({ options, totalVotes, userVotes, canVote, hasVoted, isAnonymous }) => {
+const PollResults = ({ options, totalVotes, userVotes, canVote, hasVoted, isAnonymous, pollId, pollTitle }) => {
+  const [isExporting, setIsExporting] = useState(false);
+
+  // Export Excel functionality
+  const handleExportExcel = async () => {
+    console.log('Export Excel clicked:', { pollId, pollTitle }); // Debug log
+    
+    if (!pollId) {
+      console.error('No pollId provided to PollResults component'); // Better error log
+      toast.error('Không thể xuất Excel: thiếu thông tin poll');
+      return;
+    }
+
+    setIsExporting(true);
+    try {
+      const response = await pollAPI.exportToExcel(pollId);
+      
+      // Create blob and download
+      const blob = new Blob([response.data], { 
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      });
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${pollTitle || 'poll'}-results.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast.success('Đã xuất file Excel thành công!');
+    } catch (error) {
+      console.error('Export Excel error:', error);
+      if (error.response?.status === 403) {
+        toast.error('Bạn không có quyền xuất file Excel cho poll này');
+      } else if (error.response?.status === 404) {
+        toast.error('Không tìm thấy poll');
+      } else {
+        toast.error('Có lỗi xảy ra khi xuất file Excel');
+      }
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   // Calculate max vote count for ranking
   const maxVoteCount = options.length > 0 ? Math.max(...options.map(opt => opt.vote_count)) : 0;
 
@@ -57,37 +112,53 @@ const PollResults = ({ options, totalVotes, userVotes, canVote, hasVoted, isAnon
             Tổng số phiếu: <span style={{ fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)', fontSize: 'var(--text-lg)' }}>{totalVotes}</span>
           </div>
           <button
-            onClick={() => alert('Chức năng xuất Excel đang được phát triển!')}
+            onClick={handleExportExcel}
+            disabled={isExporting}
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: 'var(--space-2)',
               padding: 'var(--space-3) var(--space-4)',
-              background: '#10B981',
+              background: isExporting ? '#94A3B8' : '#10B981',
               color: 'white',
               border: 'none',
               borderRadius: 'var(--radius-md)',
               fontSize: 'var(--text-sm)',
               fontWeight: 'var(--font-medium)',
-              cursor: 'pointer',
+              cursor: isExporting ? 'not-allowed' : 'pointer',
               transition: 'all 0.2s ease',
               boxShadow: '0 2px 4px rgba(16, 185, 129, 0.2)'
             }}
             onMouseOver={(e) => {
-              e.target.style.background = '#059669';
-              e.target.style.transform = 'translateY(-1px)';
-              e.target.style.boxShadow = '0 4px 8px rgba(16, 185, 129, 0.3)';
+              if (!isExporting) {
+                e.target.style.background = '#059669';
+                e.target.style.transform = 'translateY(-1px)';
+                e.target.style.boxShadow = '0 4px 8px rgba(16, 185, 129, 0.3)';
+              }
             }}
             onMouseOut={(e) => {
-              e.target.style.background = '#10B981';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = '0 2px 4px rgba(16, 185, 129, 0.2)';
+              if (!isExporting) {
+                e.target.style.background = '#10B981';
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 2px 4px rgba(16, 185, 129, 0.2)';
+              }
             }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z M11,4H13V7H16L11,2V4Z"/>
-            </svg>
-            Xuất Excel
+            {isExporting ? (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ animation: 'spin 1s linear infinite' }}>
+                  <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z" />
+                </svg>
+                Đang xuất...
+              </>
+            ) : (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z M11,4H13V7H16L11,2V4Z"/>
+                </svg>
+                Xuất Excel
+              </>
+            )}
           </button>
         </div>
       </div>

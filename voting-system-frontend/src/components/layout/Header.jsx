@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 import styles from './Header.module.scss';
@@ -7,6 +7,19 @@ const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -20,10 +33,8 @@ const Header = () => {
         <div className={styles.navbar}>
           {/* Logo & Brand */}
           <Link to="/dashboard" className={styles.brand}>
-            <div className={styles.logo}>
-              <span className={styles.logoIcon}>📊</span>
-            </div>
-            <span className={styles.brandName}>VoteHub</span>
+            <div className={styles.logo}>V</div>
+            <span className={styles.brandName}>VotingSystem</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -31,87 +42,115 @@ const Header = () => {
             <Link to="/dashboard" className={styles.navLink}>
               Dashboard
             </Link>
-            <Link to="/polls/create" className={styles.navLink}>
-              Tạo bình chọn
-            </Link>
           </nav>
 
           {/* User Menu */}
           {isAuthenticated && (
-            <div className={styles.userMenu}>
+            <div className={styles.userMenu} ref={menuRef}>
               <button 
                 className={styles.userButton}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
                 <div className={styles.avatar}>
-                  <span>{user?.username?.charAt(0)?.toUpperCase() || 'U'}</span>
+                  {user?.username?.charAt(0)?.toUpperCase() || 'U'}
                 </div>
                 <span className={styles.username}>{user?.username}</span>
                 <svg 
-                  className={`${styles.chevron} ${isMenuOpen ? styles.open : ''}`}
+                  className={`${styles.chevron} ${isMenuOpen ? styles.chevronOpen : ''}`}
                   width="16" 
                   height="16" 
-                  viewBox="0 0 16 16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
                 >
-                  <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" fill="none"/>
+                  <path d="M6 9l6 6 6-6"/>
                 </svg>
               </button>
 
               {/* Dropdown Menu */}
               {isMenuOpen && (
-                <div className={styles.dropdown}>
-                  <div className={styles.dropdownHeader}>
-                    <div className={styles.userInfo}>
+                <>
+                  <div className={styles.dropdownBackdrop} onClick={() => setIsMenuOpen(false)} />
+                  <div className={styles.dropdown}>
+                    {/* User Info */}
+                    <div className={styles.dropdownHeader}>
                       <div className={styles.avatarLarge}>
-                        <span>{user?.username?.charAt(0)?.toUpperCase() || 'U'}</span>
+                        {user?.username?.charAt(0)?.toUpperCase() || 'U'}
                       </div>
-                      <div>
-                        <div className={styles.displayName}>{user?.username}</div>
+                      <div className={styles.userInfo}>
+                        <div className={styles.displayName}>{user?.full_name || user?.username}</div>
                         <div className={styles.userEmail}>{user?.email}</div>
                       </div>
                     </div>
+                    
+                    <div className={styles.dropdownDivider} />
+                    
+                    {/* Quick Actions */}
+                    <div className={styles.dropdownSection}>
+                      <div className={styles.sectionLabel}>Tạo mới</div>
+                      <Link 
+                        to="/polls/create" 
+                        className={styles.dropdownItem}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <span className={styles.itemIcon}>📊</span>
+                        <span>Tạo Bình Chọn</span>
+                      </Link>
+                    </div>
+                    
+                    <div className={styles.dropdownDivider} />
+                    
+                    {/* Account */}
+                    <div className={styles.dropdownSection}>
+                      <div className={styles.sectionLabel}>Tài khoản</div>
+                      <Link 
+                        to="/profile" 
+                        className={styles.dropdownItem}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <span className={styles.itemIcon}>👤</span>
+                        <span>Hồ sơ</span>
+                      </Link>
+                      <Link 
+                        to="/settings" 
+                        className={styles.dropdownItem}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <span className={styles.itemIcon}>⚙️</span>
+                        <span>Cài đặt</span>
+                      </Link>
+                    </div>
+                    
+                    <div className={styles.dropdownDivider} />
+                    
+                    {/* Logout */}
+                    <div className={styles.dropdownSection}>
+                      <button 
+                        onClick={handleLogout}
+                        className={`${styles.dropdownItem} ${styles.logoutItem}`}
+                      >
+                        <span className={styles.itemIcon}>🚪</span>
+                        <span>Đăng xuất</span>
+                      </button>
+                    </div>
                   </div>
-                  
-                  <div className={styles.dropdownDivider} />
-                  
-                  <div className={styles.dropdownBody}>
-                    <Link to="/profile" className={styles.dropdownItem}>
-                      <span>Hồ sơ</span>
-                    </Link>
-                    <Link to="/settings" className={styles.dropdownItem}>
-                      <span>Cài đặt</span>
-                    </Link>
-                  </div>
-                  
-                  <div className={styles.dropdownDivider} />
-                  
-                  <div className={styles.dropdownBody}>
-                    <button 
-                      onClick={handleLogout}
-                      className={styles.dropdownItem}
-                    >
-                      <span>Đăng xuất</span>
-                    </button>
-                  </div>
-                </div>
+                </>
               )}
             </div>
           )}
 
-          {/* Mobile Menu Button */}
-          <button 
-            className={styles.mobileMenuButton}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24">
-              <path 
-                d="M3 12h18M3 6h18M3 18h18" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round"
-              />
-            </svg>
-          </button>
+          {/* Auth Links for non-authenticated users */}
+          {!isAuthenticated && (
+            <div className={styles.authLinks}>
+              <Link to="/login" className={styles.loginLink}>
+                Đăng nhập
+              </Link>
+              <Link to="/register" className={styles.registerLink}>
+                Đăng ký
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </header>

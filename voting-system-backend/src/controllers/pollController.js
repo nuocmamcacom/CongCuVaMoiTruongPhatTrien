@@ -314,13 +314,14 @@ const castVote = async (req, res) => {
 
 const exportPollToExcel = async (req, res) => {
     try {
-        const { pollId } = req.params;
+        const { poll_id } = req.params;
+        console.log('Export Excel request:', { poll_id, userId: req.user?.user_id }); // Debug log
         
         // Poll already verified by checkCreator middleware
         const poll = req.poll;
         
         // Generate Excel workbook
-        const workbook = await excelService.createPollExcelReport(pollId);
+        const workbook = await excelService.createPollExcelReport(poll_id);
         
         // Generate buffer
         const buffer = await excelService.generateBuffer(workbook);

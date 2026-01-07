@@ -30,6 +30,45 @@ export const pollAPI = {
   },
   createPoll: (data) => api.post('/polls', data),
   castVote: (data) => api.post('/polls/vote', data),
+  exportToExcel: (pollId) => {
+    if (!pollId || typeof pollId !== 'string') {
+      throw new Error('Invalid pollId: must be a string');
+    }
+    return api.get(`/polls/${pollId}/export`, { 
+      responseType: 'blob' // Important for file download
+    });
+  },
+};
+
+export const formAPI = {
+  getForms: () => api.get('/forms'),
+  getFormDetails: (formId) => {
+    if (!formId || typeof formId !== 'string') {
+      throw new Error('Invalid formId: must be a string');
+    }
+    return api.get(`/forms/${formId}`);
+  },
+  createForm: (data) => api.post('/forms', data),
+  submitResponse: (formId, data) => {
+    if (!formId || typeof formId !== 'string') {
+      throw new Error('Invalid formId: must be a string');
+    }
+    return api.post(`/forms/${formId}/submit`, data);
+  },
+  getFormResponses: (formId) => {
+    if (!formId || typeof formId !== 'string') {
+      throw new Error('Invalid formId: must be a string');
+    }
+    return api.get(`/forms/${formId}/responses`);
+  },
+  exportToExcel: (formId) => {
+    if (!formId || typeof formId !== 'string') {
+      throw new Error('Invalid formId: must be a string');
+    }
+    return api.get(`/forms/${formId}/export`, { 
+      responseType: 'blob' 
+    });
+  },
 };
 
 // api.js - thêm function này

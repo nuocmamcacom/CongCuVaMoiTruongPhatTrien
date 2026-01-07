@@ -17,6 +17,7 @@ const { initializeSocket } = require('./services/socketService');
 const authRoutes = require('./routes/auth');
 const pollRoutes = require('./routes/polls');
 const userRoutes = require('./routes/users');
+const formRoutes = require('./routes/forms');
 
 const app = express();
 const server = http.createServer(app);
@@ -71,6 +72,7 @@ app.set('trust proxy', 1);
 app.use('/api/auth', authRoutes);
 app.use('/api/polls', pollRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/forms', formRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

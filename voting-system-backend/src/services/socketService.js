@@ -15,6 +15,16 @@ const initializeSocket = (socketIO) => {
             socket.leave(`poll-${pollId}`);
         });
 
+        // Join form room
+        socket.on('joinForm', (formId) => {
+            socket.join(`form-${formId}`);
+        });
+
+        // Leave form room
+        socket.on('leaveForm', (formId) => {
+            socket.leave(`form-${formId}`);
+        });
+
         socket.on('disconnect', () => {
         });
     });
@@ -36,8 +46,26 @@ const broadcastNewPoll = (poll) => {
     }
 };
 
+const broadcastFormUpdate = (formId, submissionCount) => {
+    if (io) {
+        io.to(`form-${formId}`).emit('form-update', {
+            form_id: formId,
+            submission_count: submissionCount,
+            timestamp: new Date().toISOString()
+        });
+    }
+};
+
+const broadcastNewForm = (form) => {
+    if (io) {
+        io.emit('new-form', form);
+    }
+};
+
 module.exports = {
     initializeSocket,
     broadcastPollUpdate,
-    broadcastNewPoll
+    broadcastNewPoll,
+    broadcastFormUpdate,
+    broadcastNewForm
 };

@@ -9,6 +9,8 @@ import Register from './pages/Register.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import CreatePoll from './pages/CreatePoll.jsx';
 import PollDetail from './pages/PollDetail.jsx';
+import FormDetail from './pages/FormDetail';
+import FormResponses from './pages/FormResponses';
 import LoadingSpinner from "./components/common/LoadingSpinner.jsx";
 import './styles/app.scss';
 
@@ -39,6 +41,16 @@ const PublicRoute = ({ children }) => {
   }
 
   return !isAuthenticated ? children : <Navigate to="/dashboard" />;
+};
+
+// Public Form Route (no authentication required)
+const PublicFormRoute = ({ children }) => {
+  return (
+    <>
+      <Header />
+      {children}
+    </>
+  );
 };
 
 function AppContent() {
@@ -93,6 +105,25 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
+          
+          {/* Form Routes */}
+          <Route
+            path="/forms/:id"
+            element={
+              <PublicFormRoute>
+                <FormDetail />
+              </PublicFormRoute>
+            }
+          />
+          <Route
+            path="/forms/:id/responses"
+            element={
+              <ProtectedRoute>
+                <FormResponses />
+              </ProtectedRoute>
+            }
+          />
+          
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
       </main>

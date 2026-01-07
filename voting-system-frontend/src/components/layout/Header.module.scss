@@ -1,17 +1,36 @@
-/* Header Stitch Design */
+/* Header - Modern Minimalist Design */
+@use "sass:color";
+
+/* === Color Palette === */
+$color-bg: #ffffff;
+$color-text-primary: #1a1a2e;
+$color-text-secondary: #6b7280;
+$color-text-muted: #9ca3af;
+$color-border: #e5e7eb;
+$color-border-light: #f3f4f6;
+$color-accent: #4f46e5;
+$color-accent-light: #eef2ff;
+$color-danger: #ef4444;
+$color-danger-light: #fef2f2;
+
+/* === Header === */
 .header {
-  background: var(--bg-white);
-  border-bottom: 1px solid var(--secondary-100);
   position: sticky;
   top: 0;
-  z-index: 50;
-  backdrop-filter: blur(8px);
+  z-index: 100;
+  background: $color-bg;
+  border-bottom: 1px solid $color-border-light;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 var(--space-4);
+  padding: 0 32px;
+
+  @media (max-width: 768px) {
+    padding: 0 16px;
+  }
 }
 
 .navbar {
@@ -19,50 +38,48 @@
   align-items: center;
   justify-content: space-between;
   height: 64px;
-  gap: var(--space-6);
+  gap: 32px;
 }
 
-/* Brand & Logo */
+/* === Brand === */
 .brand {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: 12px;
   text-decoration: none;
-  color: var(--text-primary);
-  font-weight: 600;
-  transition: opacity 0.2s ease;
-
-  &:hover {
-    opacity: 0.8;
-  }
+  flex-shrink: 0;
 }
 
 .logo {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 100%);
-  border-radius: var(--radius-lg);
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, $color-accent 0%, color.adjust($color-accent, $lightness: -15%) 100%);
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-sm);
-}
-
-.logoIcon {
-  font-size: 20px;
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
 }
 
 .brandName {
-  font-size: var(--text-xl);
+  font-size: 18px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: $color-text-primary;
+  letter-spacing: -0.3px;
+
+  @media (max-width: 480px) {
+    display: none;
+  }
 }
 
-/* Navigation */
+/* === Navigation === */
 .nav {
   display: flex;
   align-items: center;
-  gap: var(--space-8);
+  gap: 8px;
+  flex: 1;
 
   @media (max-width: 768px) {
     display: none;
@@ -70,21 +87,21 @@
 }
 
 .navLink {
-  color: var(--text-secondary);
-  text-decoration: none;
+  padding: 8px 16px;
+  font-size: 14px;
   font-weight: 500;
-  font-size: var(--text-sm);
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-md);
+  color: $color-text-secondary;
+  text-decoration: none;
+  border-radius: 8px;
   transition: all 0.2s ease;
 
   &:hover {
-    color: var(--primary);
-    background: var(--primary-50);
+    color: $color-text-primary;
+    background: $color-border-light;
   }
 }
 
-/* User Menu */
+/* === User Menu === */
 .userMenu {
   position: relative;
 }
@@ -92,67 +109,76 @@
 .userButton {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-2);
+  gap: 10px;
+  padding: 6px 12px 6px 6px;
+  background: $color-border-light;
   border: none;
-  background: none;
+  border-radius: 24px;
   cursor: pointer;
-  border-radius: var(--radius-lg);
-  transition: background 0.2s ease;
-  color: var(--text-primary);
+  transition: all 0.2s ease;
 
   &:hover {
-    background: var(--secondary-50);
+    background: color.adjust($color-border-light, $lightness: -5%);
   }
 }
 
 .avatar {
   width: 32px;
   height: 32px;
+  background: $color-accent;
+  color: white;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  font-size: 14px;
   font-weight: 600;
-  font-size: var(--text-sm);
 }
 
 .username {
+  font-size: 14px;
   font-weight: 500;
-  font-size: var(--text-sm);
+  color: $color-text-primary;
 
-  @media (max-width: 640px) {
+  @media (max-width: 480px) {
     display: none;
   }
 }
 
 .chevron {
+  color: $color-text-muted;
   transition: transform 0.2s ease;
-  color: var(--text-secondary);
-
-  &.open {
-    transform: rotate(180deg);
-  }
 }
 
-/* Dropdown */
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+/* === Dropdown === */
+.dropdownBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+}
+
 .dropdown {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
   width: 280px;
-  background: var(--bg-white);
-  border: 1px solid var(--secondary-200);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
+  background: $color-bg;
+  border: 1px solid $color-border;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  z-index: 100;
   overflow: hidden;
-  z-index: 50;
-  animation: slideDown 0.2s ease-out;
+  animation: dropdownFadeIn 0.2s ease;
 }
 
-@keyframes slideDown {
+@keyframes dropdownFadeIn {
   from {
     opacity: 0;
     transform: translateY(-8px);
@@ -163,87 +189,165 @@
   }
 }
 
+/* === Dropdown Header === */
 .dropdownHeader {
-  padding: var(--space-4);
-  background: var(--secondary-25);
-}
-
-.userInfo {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: 14px;
+  padding: 20px;
+  background: $color-border-light;
 }
 
 .avatarLarge {
   width: 48px;
   height: 48px;
+  background: $color-accent;
+  color: white;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  font-size: 20px;
   font-weight: 600;
-  font-size: var(--text-lg);
+  flex-shrink: 0;
+}
+
+.userInfo {
+  flex: 1;
+  min-width: 0;
 }
 
 .displayName {
+  font-size: 15px;
   font-weight: 600;
-  font-size: var(--text-base);
-  color: var(--text-primary);
+  color: $color-text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .userEmail {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
+  font-size: 13px;
+  color: $color-text-muted;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
 }
 
+/* === Dropdown Divider === */
 .dropdownDivider {
   height: 1px;
-  background: var(--secondary-100);
+  background: $color-border-light;
 }
 
-.dropdownBody {
-  padding: var(--space-2);
+/* === Dropdown Section === */
+.dropdownSection {
+  padding: 8px;
 }
 
+.sectionLabel {
+  padding: 8px 12px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* === Dropdown Item === */
 .dropdownItem {
   display: flex;
   align-items: center;
+  gap: 12px;
   width: 100%;
-  padding: var(--space-3) var(--space-4);
-  text-decoration: none;
-  color: var(--text-primary);
+  padding: 12px;
+  background: transparent;
   border: none;
-  background: none;
-  cursor: pointer;
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 500;
-  transition: background 0.2s ease;
+  color: $color-text-primary;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
 
   &:hover {
-    background: var(--secondary-50);
+    background: $color-border-light;
   }
 }
 
-/* Mobile Menu Button */
-.mobileMenuButton {
-  display: none;
-  padding: var(--space-2);
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: var(--text-primary);
-  border-radius: var(--radius-md);
+.itemIcon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+}
+
+.logoutItem {
+  color: $color-danger;
 
   &:hover {
-    background: var(--secondary-50);
+    background: $color-danger-light;
+  }
+}
+
+/* === Auth Links (for non-authenticated users) === */
+.authLinks {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.loginLink {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: $color-text-secondary;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: $color-text-primary;
+  }
+}
+
+.registerLink {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  background: $color-accent;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: color.adjust($color-accent, $lightness: -8%);
+  }
+}
+
+/* === Mobile Menu Button === */
+.mobileMenuButton {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: $color-text-secondary;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $color-border-light;
+    color: $color-text-primary;
   }
 
   @media (max-width: 768px) {
     display: flex;
-    align-items: center;
-    justify-content: center;
   }
 }

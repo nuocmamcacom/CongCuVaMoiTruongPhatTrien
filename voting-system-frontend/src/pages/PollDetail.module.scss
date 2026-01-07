@@ -1,0 +1,489 @@
+/* PollDetail Page - Modern Minimalist Design */
+@use "sass:color";
+
+/* === Color Palette === */
+$color-bg: #fafafa;
+$color-bg-card: #ffffff;
+$color-text-primary: #1a1a2e;
+$color-text-secondary: #6b7280;
+$color-text-muted: #9ca3af;
+$color-border: #e5e7eb;
+$color-border-light: #f3f4f6;
+$color-accent: #4f46e5;
+$color-accent-light: #eef2ff;
+$color-success: #059669;
+$color-success-light: #ecfdf5;
+$color-warning: #f59e0b;
+
+/* === Page Container === */
+.pollDetailPage {
+  min-height: 100vh;
+  background: $color-bg;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 32px;
+
+  @media (max-width: 768px) {
+    padding: 24px 16px;
+  }
+}
+
+/* === Back Button === */
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  margin-bottom: 32px;
+  background: transparent;
+  border: 2px solid $color-border;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: $color-text-secondary;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: $color-accent;
+    color: $color-accent;
+    background: $color-accent-light;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* === Header === */
+.header {
+  margin-bottom: 40px;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+}
+
+.statusActive {
+  background: $color-success-light;
+  color: $color-success;
+}
+
+.statusEnded {
+  background: $color-border-light;
+  color: $color-text-muted;
+}
+
+.liveIndicator {
+  width: 8px;
+  height: 8px;
+  background: $color-success;
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin: 0 0 12px 0;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+
+  @media (max-width: 768px) {
+    font-size: 28px;
+  }
+}
+
+.description {
+  font-size: 16px;
+  color: $color-text-secondary;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* === Poll Meta === */
+.meta {
+  display: flex;
+  gap: 32px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid $color-border-light;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metaLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metaValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: $color-text-primary;
+}
+
+/* === Main Content === */
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* === Voting Card === */
+.votingCard {
+  background: $color-bg-card;
+  border: 1px solid $color-border;
+  border-radius: 16px;
+  padding: 32px;
+
+  @media (max-width: 768px) {
+    padding: 24px;
+  }
+}
+
+.votingTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin: 0 0 24px 0;
+}
+
+/* === Options List === */
+.optionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.optionItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border: 2px solid $color-border;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(.optionSelected):not(.optionDisabled) {
+    border-color: $color-accent;
+    background: $color-accent-light;
+  }
+}
+
+.optionSelected {
+  border-color: $color-accent;
+  background: $color-accent-light;
+}
+
+.optionDisabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.optionIndicator {
+  width: 22px;
+  height: 22px;
+  border: 2px solid $color-border;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.optionIndicatorSelected {
+  border-color: $color-accent;
+  background: $color-accent;
+
+  &::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+  }
+}
+
+.optionIndicatorCheckbox {
+  border-radius: 6px;
+
+  &.optionIndicatorSelected {
+    &::after {
+      content: '✓';
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      width: auto;
+      height: auto;
+      background: none;
+    }
+  }
+}
+
+.optionText {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+  color: $color-text-primary;
+}
+
+/* === Vote Button === */
+.voteBtn {
+  width: 100%;
+  padding: 16px 24px;
+  margin-top: 24px;
+  border: none;
+  border-radius: 12px;
+  background: $color-accent;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:hover:not(:disabled) {
+    background: color.adjust($color-accent, $lightness: -8%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba($color-accent, 0.25);
+  }
+
+  &:disabled {
+    background: $color-text-muted;
+    cursor: not-allowed;
+  }
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* === Results Card === */
+.resultsCard {
+  background: $color-bg-card;
+  border: 1px solid $color-border;
+  border-radius: 16px;
+  padding: 32px;
+
+  @media (max-width: 768px) {
+    padding: 24px;
+  }
+}
+
+.resultsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+}
+
+.resultsTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.totalVotes {
+  font-size: 14px;
+  color: $color-text-secondary;
+  font-weight: 500;
+}
+
+/* === Results List === */
+.resultsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.resultItem {
+  position: relative;
+}
+
+.resultHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.resultText {
+  font-size: 15px;
+  font-weight: 500;
+  color: $color-text-primary;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.votedBadge {
+  font-size: 10px;
+  font-weight: 700;
+  color: $color-accent;
+  background: $color-accent-light;
+  padding: 2px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.resultStats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: $color-text-secondary;
+}
+
+.resultPercent {
+  font-weight: 700;
+  color: $color-accent;
+  min-width: 45px;
+  text-align: right;
+}
+
+.resultCount {
+  color: $color-text-muted;
+}
+
+/* === Progress Bar === */
+.progressBar {
+  height: 8px;
+  background: $color-border-light;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, $color-accent 0%, color.adjust($color-accent, $lightness: -10%) 100%);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.progressFillVoted {
+  background: linear-gradient(90deg, $color-success 0%, color.adjust($color-success, $lightness: -10%) 100%);
+}
+
+/* === Already Voted Message === */
+.votedMessage {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  margin-top: 24px;
+  background: $color-success-light;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: $color-success;
+}
+
+.votedIcon {
+  width: 24px;
+  height: 24px;
+  background: $color-success;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+/* === Export Button === */
+.exportBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  margin-top: 24px;
+  background: transparent;
+  border: 2px solid $color-border;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: $color-text-secondary;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: $color-accent;
+    color: $color-accent;
+    background: $color-accent-light;
+  }
+}
+
+/* === Not Found === */
+.notFound {
+  text-align: center;
+  padding: 80px 32px;
+}
+
+.notFoundTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin: 0 0 12px 0;
+}
+
+.notFoundText {
+  font-size: 15px;
+  color: $color-text-secondary;
+  margin: 0;
+}
