@@ -2,15 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { pollAPI } from '../services/api';
 import toast from 'react-hot-toast';
+import { useAuth } from '../contexts/AuthContext';
 import LoadingSpinner from "../components/common/LoadingSpinner.jsx";
 import styles from './PollDetail.module.scss';
 
 const PollDetails = () => {
     const { pollId } = useParams();
     const navigate = useNavigate();
+    const authState = useAuth();
     const [pollData, setPollData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [voting, setVoting] = useState(false);
+    const [exporting, setExporting] = useState(false);
     const [selectedOptions, setSelectedOptions] = useState([]);
 
     useEffect(() => {
@@ -32,6 +35,35 @@ const PollDetails = () => {
             navigate('/dashboard');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleExportToExcel = async () => {
+        try {
+            setExporting(true);
+            const token = localStorage.getItem('token');
+            console.log('Export token:', token); // Debug
+            console.log('Auth state:', authState); // Debug
+            const response = await pollAPI.exportToExcel(pollId);
+            
+            // Create blob and download
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `${pollData.poll.title || 'poll'}_results.xlsx`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            
+            toast.success('Xuất Excel thành công!');
+        } catch (error) {
+            console.error('Error exporting to Excel:', error);
+            console.error('Error status:', error.response?.status);
+            console.error('Error data:', error.response?.data);
+            toast.error('Có lỗi xảy ra khi xuất Excel');
+        } finally {
+            setExporting(false);
         }
     };
 
@@ -120,35 +152,51 @@ const PollDetails = () => {
 
                 {/* Header */}
                 <header className={styles.header}>
-                    <div className={isActive ? styles.statusActive : styles.statusEnded}>
-                        {isActive && <span className={styles.liveIndicator}></span>}
-                        <span className={styles.statusBadge}>
-                            {isActive ? 'Đang diễn ra' : 'Đã kết thúc'}
-                        </span>
-                    </div>
-                    
-                    <h1 className={styles.title}>{poll.title}</h1>
-                    
-                    {poll.description && (
-                        <p className={styles.description}>{poll.description}</p>
-                    )}
-
-                    <div className={styles.meta}>
-                        <div className={styles.metaItem}>
-                            <span className={styles.metaLabel}>Tổng phiếu</span>
-                            <span className={styles.metaValue}>{totalVotes}</span>
-                        </div>
-                        <div className={styles.metaItem}>
-                            <span className={styles.metaLabel}>Loại</span>
-                            <span className={styles.metaValue}>
-                                {isSingleChoice ? 'Chọn một' : 'Chọn nhiều'}
-                            </span>
-                        </div>
-                        {poll.end_time && (
-                            <div className={styles.metaItem}>
-                                <span className={styles.metaLabel}>Kết thúc</span>
-                                <span className={styles.metaValue}>{formatDate(poll.end_time)}</span>
+                    <div className={styles.headerTop}>
+                        <div className={styles.headerLeft}>
+                            <div className={isActive ? styles.statusActive : styles.statusEnded}>
+                                {isActive && <span className={styles.liveIndicator}></span>}
+                                <span className={styles.statusBadge}>
+                                    {isActive ? 'Đang diễn ra' : 'Đã kết thúc'}
+                                </span>
                             </div>
+                            
+                            <h1 className={styles.title}>{poll.title}</h1>
+                            
+                            {poll.description && (
+                                <p className={styles.description}>{poll.description}</p>
+                            )}
+
+                            <div className={styles.meta}>
+                                <div className={styles.metaItem}>
+                                    <span className={styles.metaLabel}>Tổng phiếu</span>
+                                    <span className={styles.metaValue}>{totalVotes}</span>
+                                </div>
+                                <div className={styles.metaItem}>
+                                    <span className={styles.metaLabel}>Loại</span>
+                                    <span className={styles.metaValue}>
+                                        {isSingleChoice ? 'Chọn một' : 'Chọn nhiều'}
+                                    </span>
+                                </div>
+                                {poll.end_time && (
+                                    <div className={styles.metaItem}>
+                                        <span className={styles.metaLabel}>Kết thúc</span>
+                                        <span className={styles.metaValue}>{formatDate(poll.end_time)}</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        
+                        {authState?.user?.user_id && poll.creator_id && 
+                         String(authState.user.user_id) === String(poll.creator_id) && (
+                            <button
+                                onClick={handleExportToExcel}
+                                disabled={exporting}
+                                className={styles.btnExport}
+                                title="Xuất kết quả bình chọn sang file Excel"
+                            >
+                                {exporting ? '⏳ Đang xuất...' : '📥 Xuất Excel'}
+                            </button>
                         )}
                     </div>
                 </header>

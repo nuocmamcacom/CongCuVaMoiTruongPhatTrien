@@ -17,8 +17,11 @@ const checkCreator = async (req, res, next) => {
             });
         }
 
+        console.log('Poll creator_id:', poll.creator_id.toString(), 'User ID:', userId.toString()); // Debug
+        
         // Check if the current user is the creator of the poll
         if (poll.creator_id.toString() !== userId.toString()) {
+            console.log('Access denied:', poll.creator_id.toString(), '!==', userId.toString()); // Debug
             return res.status(403).json({
                 success: false,
                 message: 'Access denied. Only poll creator can perform this action.'

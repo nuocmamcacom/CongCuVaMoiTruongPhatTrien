@@ -3,14 +3,17 @@ import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { formAPI } from '../../services/api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import './FormDetail.scss';
+import { useAuth } from '../../contexts/AuthContext';
+import styles from './FormDetail.module.scss';
 
 const FormDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const authState = useAuth();
     const [form, setForm] = useState(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
+    const [exporting, setExporting] = useState(false);
     const [answers, setAnswers] = useState({});
     const [errors, setErrors] = useState({});
 
@@ -21,20 +24,23 @@ const FormDetail = () => {
     const loadForm = async () => {
         try {
             setLoading(true);
-            const data = await formAPI.getFormDetails(id);
-            setForm(data);
+            const response = await formAPI.getFormDetails(id);
+            const formData = response.data.form;
+            setForm(formData);
             
             // Initialize answers with default values
             const initialAnswers = {};
-            data.questions.forEach(question => {
-                switch (question.type) {
-                    case 'checkbox':
-                        initialAnswers[question._id] = [];
-                        break;
-                    default:
-                        initialAnswers[question._id] = '';
-                }
-            });
+            if (formData?.questions) {
+                formData.questions.forEach(question => {
+                    switch (question.question_type) {
+                        case 'checkbox':
+                            initialAnswers[question.question_id] = [];
+                            break;
+                        default:
+                            initialAnswers[question.question_id] = '';
+                    }
+                });
+            }
             setAnswers(initialAnswers);
         } catch (error) {
             console.error('Error loading form:', error);
@@ -64,17 +70,41 @@ const FormDetail = () => {
         }
     };
 
+    const handleExportToExcel = async () => {
+        try {
+            setExporting(true);
+            const response = await formAPI.exportToExcel(id);
+            
+            // Create blob and download
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `${form.title || 'form'}_responses.xlsx`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            
+            toast.success('Xuất Excel thành công!');
+        } catch (error) {
+            console.error('Error exporting to Excel:', error);
+            toast.error('Có lỗi xảy ra khi xuất Excel');
+        } finally {
+            setExporting(false);
+        }
+    };
+
     const validateForm = () => {
         const newErrors = {};
         
-        form.questions.forEach(question => {
-            if (question.required) {
-                const answer = answers[question._id];
+        form.questions?.forEach(question => {
+            if (question.is_required) {
+                const answer = answers[question.question_id];
                 
                 if (!answer || 
                     (typeof answer === 'string' && answer.trim() === '') ||
                     (Array.isArray(answer) && answer.length === 0)) {
-                    newErrors[question._id] = 'Câu hỏi này bắt buộc phải trả lời';
+                    newErrors[question.question_id] = 'Câu hỏi này bắt buộc phải trả lời';
                 }
             }
         });
@@ -94,10 +124,37 @@ const FormDetail = () => {
         try {
             setSubmitting(true);
             
-            const formattedAnswers = Object.entries(answers).map(([questionId, value]) => ({
-                question_id: questionId,
-                answer: value
-            }));
+            const formattedAnswers = Object.entries(answers).map(([questionId, value]) => {
+                // Find the question to get its type
+                const question = form.questions?.find(q => q.question_id === questionId);
+                const questionType = question?.question_type || 'short_text';
+                
+                const answer = {
+                    question_id: questionId,
+                    question_type: questionType
+                };
+                
+                // Set the correct field based on question type
+                switch (questionType) {
+                    case 'multiple_choice':
+                    case 'checkbox':
+                        answer.selected_options = Array.isArray(value) ? value : [value];
+                        break;
+                    case 'rating':
+                        answer.rating_value = parseInt(value) || 0;
+                        break;
+                    default: // short_text, paragraph
+                        answer.answer_text = String(value);
+                }
+                
+                return answer;
+            }).filter(a => {
+                // Filter out empty answers
+                if (a.answer_text) return a.answer_text.trim() !== '';
+                if (a.selected_options) return a.selected_options.length > 0;
+                if (a.rating_value) return a.rating_value > 0;
+                return false;
+            });
 
             await formAPI.submitResponse(id, {
                 answers: formattedAnswers
@@ -129,9 +186,9 @@ const FormDetail = () => {
 
     if (!form) {
         return (
-            <div className="form-detail__error">
+            <div className={styles.errorContainer}>
                 <h2>Form không tồn tại</h2>
-                <button onClick={() => navigate('/')} className="btn btn--primary">
+                <button onClick={() => navigate('/')} className={styles.btnPrimary}>
                     Quay về trang chủ
                 </button>
             </div>
@@ -139,39 +196,54 @@ const FormDetail = () => {
     }
 
     return (
-        <div className="form-detail">
-            <div className="form-detail__container">
-                <div className="form-detail__header">
-                    <h1 className="form-detail__title">{form.title}</h1>
-                    {form.description && (
-                        <p className="form-detail__description">{form.description}</p>
-                    )}
-                    <div className="form-detail__meta">
-                        <span className="form-detail__questions-count">
-                            {form.questions.length} câu hỏi
-                        </span>
-                        <span className="form-detail__required-note">
-                            * Bắt buộc
-                        </span>
+        <div className={styles.formDetailPage}>
+            <div className={styles.container}>
+                <div className={styles.header}>
+                    <div className={styles.headerTop}>
+                        <div>
+                            <h1 className={styles.title}>{form.title}</h1>
+                            {form.description && (
+                                <p className={styles.description}>{form.description}</p>
+                            )}
+                            <div className={styles.meta}>
+                                <span className={styles.questionsCount}>
+                                    {form.questions?.length || 0} câu hỏi
+                                </span>
+                                <span className={styles.requiredNote}>
+                                    * Bắt buộc
+                                </span>
+                            </div>
+                        </div>
+                        {authState?.user?.user_id && form.creator_id && 
+                         String(authState.user.user_id) === String(form.creator_id) && (
+                            <button
+                                onClick={handleExportToExcel}
+                                disabled={exporting}
+                                className={styles.btnExport}
+                                title="Xuất kết quả khảo sát sang file Excel"
+                            >
+                                {exporting ? '⏳ Đang xuất...' : '📥 Xuất Excel'}
+                            </button>
+                        )}
                     </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="form-detail__form">
-                    {form.questions.map((question, index) => (
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    {form.questions?.map((question, index) => (
                         <QuestionRenderer
-                            key={question._id}
+                            key={question.question_id || `question-${index}`}
                             question={question}
                             questionNumber={index + 1}
-                            value={answers[question._id] || ''}
-                            onChange={(value) => handleAnswerChange(question._id, value)}
-                            error={errors[question._id]}
+                            value={answers[question.question_id] || ''}
+                            onChange={(value) => handleAnswerChange(question.question_id, value)}
+                            error={errors[question.question_id]}
                         />
                     ))}
 
-                    <div className="form-detail__actions">
+                    <div className={styles.actions}>
                         <button
                             type="submit"
-                            className="btn btn--primary btn--large"
+                            className={styles.btnSubmit}
                             disabled={submitting}
                         >
                             {submitting ? 'Đang gửi...' : 'Gửi phản hồi'}
@@ -180,7 +252,7 @@ const FormDetail = () => {
                         <button
                             type="button"
                             onClick={() => navigate('/')}
-                            className="btn btn--outline"
+                            className={styles.btnCancel}
                         >
                             Hủy
                         </button>
@@ -194,7 +266,7 @@ const FormDetail = () => {
 // Question Renderer Component
 const QuestionRenderer = ({ question, questionNumber, value, onChange, error }) => {
     const renderQuestionContent = () => {
-        switch (question.type) {
+        switch (question.question_type) {
             case 'short_text':
                 return (
                     <input
@@ -202,8 +274,8 @@ const QuestionRenderer = ({ question, questionNumber, value, onChange, error }) 
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
                         placeholder="Nhập câu trả lời ngắn..."
-                        className={`form-input ${error ? 'form-input--error' : ''}`}
-                        maxLength={question.options?.maxLength || 255}
+                        className={`${styles.input} ${error ? styles.inputError : ''}`}
+                        maxLength={255}
                     />
                 );
 
@@ -213,25 +285,25 @@ const QuestionRenderer = ({ question, questionNumber, value, onChange, error }) 
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
                         placeholder="Nhập câu trả lời dài..."
-                        className={`form-textarea ${error ? 'form-textarea--error' : ''}`}
+                        className={`${styles.textarea} ${error ? styles.textareaError : ''}`}
                         rows={4}
-                        maxLength={question.options?.maxLength || 1000}
+                        maxLength={1000}
                     />
                 );
 
             case 'multiple_choice':
                 return (
-                    <div className="form-options">
-                        {question.options?.choices?.map((choice, index) => (
-                            <label key={index} className="form-radio">
+                    <div className={styles.options}>
+                        {question.options?.map((option, index) => (
+                            <label key={option.option_id || index} className={styles.radioOption}>
                                 <input
                                     type="radio"
-                                    name={`question-${question._id}`}
-                                    value={choice}
-                                    checked={value === choice}
+                                    name={`question-${question.question_id}`}
+                                    value={option.option_text}
+                                    checked={value === option.option_text}
                                     onChange={(e) => onChange(e.target.value)}
                                 />
-                                <span className="form-radio__label">{choice}</span>
+                                <span className={styles.optionLabel}>{option.option_text}</span>
                             </label>
                         ))}
                     </div>
@@ -239,50 +311,50 @@ const QuestionRenderer = ({ question, questionNumber, value, onChange, error }) 
 
             case 'checkbox':
                 return (
-                    <div className="form-options">
-                        {question.options?.choices?.map((choice, index) => (
-                            <label key={index} className="form-checkbox">
+                    <div className={styles.options}>
+                        {question.options?.map((option, index) => (
+                            <label key={option.option_id || index} className={styles.checkboxOption}>
                                 <input
                                     type="checkbox"
-                                    value={choice}
-                                    checked={Array.isArray(value) && value.includes(choice)}
+                                    value={option.option_text}
+                                    checked={Array.isArray(value) && value.includes(option.option_text)}
                                     onChange={(e) => {
                                         if (e.target.checked) {
-                                            onChange([...(Array.isArray(value) ? value : []), choice]);
+                                            onChange([...(Array.isArray(value) ? value : []), option.option_text]);
                                         } else {
-                                            onChange((Array.isArray(value) ? value : []).filter(v => v !== choice));
+                                            onChange((Array.isArray(value) ? value : []).filter(v => v !== option.option_text));
                                         }
                                     }}
                                 />
-                                <span className="form-checkbox__label">{choice}</span>
+                                <span className={styles.optionLabel}>{option.option_text}</span>
                             </label>
                         ))}
                     </div>
                 );
 
             case 'rating':
-                const maxRating = question.options?.maxRating || 5;
+                const maxRating = question.rating_scale?.max || 5;
                 return (
-                    <div className="form-rating">
+                    <div className={styles.rating}>
                         {[...Array(maxRating)].map((_, index) => {
                             const rating = index + 1;
                             return (
-                                <label key={rating} className="form-rating__item">
+                                <label key={rating} className={styles.ratingItem}>
                                     <input
                                         type="radio"
-                                        name={`rating-${question._id}`}
+                                        name={`rating-${question.question_id}`}
                                         value={rating}
                                         checked={parseInt(value) === rating}
                                         onChange={(e) => onChange(parseInt(e.target.value))}
                                     />
-                                    <span className="form-rating__star">
+                                    <span className={styles.ratingStar}>
                                         {parseInt(value) >= rating ? '★' : '☆'}
                                     </span>
-                                    <span className="form-rating__number">{rating}</span>
+                                    <span className={styles.ratingNumber}>{rating}</span>
                                 </label>
                             );
                         })}
-                        <div className="form-rating__labels">
+                        <div className={styles.ratingLabels}>
                             <span>1 = Rất không hài lòng</span>
                             <span>{maxRating} = Rất hài lòng</span>
                         </div>
@@ -295,22 +367,19 @@ const QuestionRenderer = ({ question, questionNumber, value, onChange, error }) 
     };
 
     return (
-        <div className="form-question">
-            <div className="form-question__header">
-                <h3 className="form-question__title">
-                    <span className="form-question__number">{questionNumber}.</span>
-                    {question.question}
-                    {question.required && <span className="form-question__required">*</span>}
+        <div className={styles.questionCard}>
+            <div className={styles.questionHeader}>
+                <h3 className={styles.questionText}>
+                    <span className={styles.questionNumber}>{questionNumber}.</span>
+                    {question.question_text}
+                    {question.is_required && <span className={styles.requiredMarker}>*</span>}
                 </h3>
-                {question.description && (
-                    <p className="form-question__description">{question.description}</p>
-                )}
             </div>
 
-            <div className="form-question__content">
+            <div className={styles.questionContent}>
                 {renderQuestionContent()}
                 {error && (
-                    <div className="form-question__error">{error}</div>
+                    <div className={styles.errorMessage}>{error}</div>
                 )}
             </div>
         </div>

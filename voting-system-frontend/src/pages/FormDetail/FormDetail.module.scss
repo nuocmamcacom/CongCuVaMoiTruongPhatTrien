@@ -1,0 +1,471 @@
+/* FormDetail Page - Modern Minimalist Design */
+@use "sass:color";
+
+/* === Color Palette === */
+$color-bg: #fafafa;
+$color-bg-card: #ffffff;
+$color-text-primary: #1a1a2e;
+$color-text-secondary: #6b7280;
+$color-text-muted: #9ca3af;
+$color-border: #e5e7eb;
+$color-border-light: #f3f4f6;
+$color-accent: #4f46e5;
+$color-accent-light: #eef2ff;
+$color-success: #059669;
+$color-success-light: #ecfdf5;
+$color-warning: #f59e0b;
+$color-danger: #ef4444;
+
+/* === Page Container === */
+.formDetailPage {
+  min-height: 100vh;
+  background: $color-bg;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 32px;
+
+  @media (max-width: 768px) {
+    padding: 24px 16px;
+  }
+}
+
+/* === Error Container === */
+.errorContainer {
+  text-align: center;
+  padding: 60px 32px;
+  background: $color-bg;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: $color-text-primary;
+    margin: 0 0 24px 0;
+  }
+}
+
+.btnPrimary {
+  padding: 12px 24px;
+  background: $color-accent;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: color.adjust($color-accent, $lightness: -8%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba($color-accent, 0.25);
+  }
+}
+
+/* === Header === */
+.header {
+  margin-bottom: 40px;
+}
+
+.headerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.headerTop > div {
+  flex: 1;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin: 0 0 12px 0;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+
+  @media (max-width: 768px) {
+    font-size: 28px;
+  }
+}
+
+.description {
+  font-size: 16px;
+  color: $color-text-secondary;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* === Export Button === */
+.btnExport {
+  padding: 12px 20px;
+  background: $color-success;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: color.adjust($color-success, $lightness: -8%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba($color-success, 0.25);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 12px 16px;
+  }
+}
+
+/* === Meta Info === */
+.meta {
+  display: flex;
+  gap: 32px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid $color-border-light;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+.questionsCount {
+  font-size: 14px;
+  font-weight: 600;
+  color: $color-text-secondary;
+}
+
+.requiredNote {
+  font-size: 14px;
+  font-weight: 500;
+  color: $color-danger;
+}
+
+/* === Form === */
+.form {
+  background: $color-bg-card;
+  border: 1px solid $color-border;
+  border-radius: 16px;
+  padding: 32px;
+  margin: 32px 0;
+
+  @media (max-width: 768px) {
+    padding: 24px;
+  }
+}
+
+/* === Question Card === */
+.questionCard {
+  padding-bottom: 24px;
+  border-bottom: 1px solid $color-border-light;
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.questionHeader {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+
+.questionNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: $color-accent;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.questionText {
+  font-size: 16px;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin: 0;
+  flex: 1;
+}
+
+.requiredMarker {
+  color: $color-danger;
+  margin-left: 4px;
+}
+
+.questionContent {
+  margin-top: 12px;
+  padding-left: 40px;
+
+  @media (max-width: 480px) {
+    padding-left: 0;
+  }
+}
+
+/* === Input Fields === */
+.input,
+.textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid $color-border;
+  border-radius: 8px;
+  font-size: 15px;
+  color: $color-text-primary;
+  background: $color-bg-card;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: $color-text-muted;
+  }
+
+  &:hover {
+    border-color: color.adjust($color-border, $lightness: -10%);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $color-accent;
+    box-shadow: 0 0 0 3px rgba($color-accent, 0.1);
+  }
+}
+
+.inputError,
+.textareaError {
+  border-color: $color-danger;
+
+  &:focus {
+    box-shadow: 0 0 0 3px rgba($color-danger, 0.1);
+  }
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+}
+
+/* === Radio & Checkbox Options === */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.radioOption,
+.checkboxOption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 2px solid $color-border;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: $color-accent;
+    background: $color-accent-light;
+  }
+
+  input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: $color-accent;
+    flex-shrink: 0;
+  }
+}
+
+.optionLabel {
+  flex: 1;
+  font-size: 15px;
+  color: $color-text-primary;
+  cursor: pointer;
+  margin: 0;
+}
+
+/* === Rating === */
+.rating {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.ratingItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  input {
+    display: none;
+  }
+}
+
+.ratingStar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 2px solid $color-border;
+  border-radius: 8px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    border-color: $color-warning;
+    background: color.adjust($color-warning, $lightness: 40%);
+  }
+}
+
+.ratingNumber {
+  font-size: 14px;
+  font-weight: 600;
+  color: $color-text-secondary;
+  min-width: 30px;
+}
+
+.ratingLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid $color-border-light;
+  font-size: 12px;
+  color: $color-text-muted;
+
+  span {
+    font-weight: 500;
+  }
+}
+
+/* === Error Message === */
+.errorMessage {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: color.adjust($color-danger, $lightness: 45%);
+  color: $color-danger;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+/* === Form Actions === */
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 32px;
+  margin-top: 32px;
+  border-top: 1px solid $color-border-light;
+
+  @media (max-width: 480px) {
+    flex-direction: column-reverse;
+  }
+}
+
+.btnSubmit {
+  padding: 14px 24px;
+  background: $color-accent;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:hover:not(:disabled) {
+    background: color.adjust($color-accent, $lightness: -8%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba($color-accent, 0.25);
+  }
+
+  &:disabled {
+    background: $color-text-muted;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
+}
+
+.btnCancel {
+  padding: 14px 24px;
+  background: transparent;
+  color: $color-text-secondary;
+  font-size: 15px;
+  font-weight: 600;
+  border: 2px solid $color-border;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: $color-text-secondary;
+    color: $color-text-primary;
+    background: $color-bg;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
+}
+
+/* === Responsive === */
+@media (max-width: 640px) {
+  .form {
+    border-radius: 12px;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
+  }
+}

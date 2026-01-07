@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import toast from 'react-hot-toast';
-import './Register.scss';
+import styles from './Register.module.scss';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -81,62 +81,70 @@ const Register = () => {
   };
 
   return (
-    <div className="register">
-      <div className="register__container">
-        <div className="register__card">
-          <div className="register__header">
-            <div className="register__logo">
-              <div className="register__logo-icon">V</div>
-            </div>
-            <h1 className="register__title">Create Account</h1>
-            <p className="register__subtitle">Join VotingSystem today</p>
+    <div className={styles.registerPage}>
+      <div className={styles.container}>
+        {/* Left Panel - Branding */}
+        <div className={styles.brandPanel}>
+          <div className={styles.brandLogo}>
+            <div className={styles.logoIcon}>V</div>
+            <div className={styles.logoText}>VotingSystem</div>
+          </div>
+          <h1 className={styles.brandTitle}>Tham gia cộng đồng</h1>
+          <p className={styles.brandDesc}>Tạo bình chọn, khảo sát và nhận phản hồi từ mọi người chỉ trong vài phút.</p>
+        </div>
+
+        {/* Right Panel - Form */}
+        <div className={styles.formPanel}>
+          <div className={styles.formHeader}>
+            <h2 className={styles.formTitle}>Tạo tài khoản</h2>
+            <p className={styles.formSubtitle}>Điền thông tin để bắt đầu</p>
           </div>
 
           {errors.submit && (
-            <div className="register__error">
+            <div className={styles.errorBox}>
               {errors.submit}
             </div>
           )}
 
-          <form className="register__form" onSubmit={handleSubmit}>
-            <div className="register__field">
-              <label htmlFor="full_name" className="register__label">
-                Full Name
+          <form className={styles.form} onSubmit={handleSubmit}>
+            <div className={styles.inputGroup}>
+              <label htmlFor="full_name" className={styles.label}>
+                Họ và tên
               </label>
               <input
                 id="full_name"
                 name="full_name"
                 type="text"
                 required
-                className={`register__input ${errors.full_name ? 'register__input--error' : ''}`}
-                placeholder="Enter your full name"
+                className={`${styles.input} ${errors.full_name ? styles.inputError : ''}`}
+                placeholder="Nhập họ và tên của bạn"
                 value={formData.full_name}
                 onChange={handleChange}
                 disabled={loading}
               />
-              {errors.full_name && <p className="register__field-error">{errors.full_name}</p>}
+              {errors.full_name && <span className={styles.errorText}>{errors.full_name}</span>}
             </div>
 
-            <div className="register__field">
-              <label htmlFor="username" className="register__label">
-                Username
+            <div className={styles.inputGroup}>
+              <label htmlFor="username" className={styles.label}>
+                Tên đăng nhập
               </label>
               <input
                 id="username"
                 name="username"
                 type="text"
                 required
-                className={`register__input ${errors.username ? 'register__input--error' : ''}`}
-                placeholder="Choose a username"
+                className={`${styles.input} ${errors.username ? styles.inputError : ''}`}
+                placeholder="Chọn một tên đăng nhập"
                 value={formData.username}
                 onChange={handleChange}
                 disabled={loading}
               />
-              {errors.username && <p className="register__field-error">{errors.username}</p>}
+              {errors.username && <span className={styles.errorText}>{errors.username}</span>}
             </div>
 
-            <div className="register__field">
-              <label htmlFor="email" className="register__label">
+            <div className={styles.inputGroup}>
+              <label htmlFor="email" className={styles.label}>
                 Email
               </label>
               <input
@@ -144,72 +152,65 @@ const Register = () => {
                 name="email"
                 type="email"
                 required
-                className={`register__input ${errors.email ? 'register__input--error' : ''}`}
-                placeholder="Enter your email"
+                className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
+                placeholder="Nhập địa chỉ email"
                 value={formData.email}
                 onChange={handleChange}
                 disabled={loading}
               />
-              {errors.email && <p className="register__field-error">{errors.email}</p>}
+              {errors.email && <span className={styles.errorText}>{errors.email}</span>}
             </div>
 
-            <div className="register__field">
-              <label htmlFor="password" className="register__label">
-                Password
+            <div className={styles.inputGroup}>
+              <label htmlFor="password" className={styles.label}>
+                Mật khẩu
               </label>
               <input
                 id="password"
                 name="password"
                 type="password"
                 required
-                className={`register__input ${errors.password ? 'register__input--error' : ''}`}
-                placeholder="Create a password"
+                className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
+                placeholder="Tạo một mật khẩu mạnh"
                 value={formData.password}
                 onChange={handleChange}
                 disabled={loading}
               />
-              {errors.password && <p className="register__field-error">{errors.password}</p>}
+              {errors.password && <span className={styles.errorText}>{errors.password}</span>}
             </div>
 
-            <div className="register__field">
-              <label htmlFor="confirmPassword" className="register__label">
-                Confirm Password
+            <div className={styles.inputGroup}>
+              <label htmlFor="confirmPassword" className={styles.label}>
+                Xác nhận mật khẩu
               </label>
               <input
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"
                 required
-                className={`register__input ${errors.confirmPassword ? 'register__input--error' : ''}`}
-                placeholder="Confirm your password"
+                className={`${styles.input} ${errors.confirmPassword ? styles.inputError : ''}`}
+                placeholder="Nhập lại mật khẩu"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 disabled={loading}
               />
-              {errors.confirmPassword && <p className="register__field-error">{errors.confirmPassword}</p>}
+              {errors.confirmPassword && <span className={styles.errorText}>{errors.confirmPassword}</span>}
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className={`register__button ${loading ? 'register__button--loading' : ''}`}
+              className={styles.submitBtn}
             >
-              {loading ? (
-                <>
-                  <span className="register__spinner"></span>
-                  <span>Creating account...</span>
-                </>
-              ) : (
-                'Create Account'
-              )}
+              {loading ? 'Đang tạo tài khoản...' : 'Tạo tài khoản'}
             </button>
           </form>
 
-          <div className="register__footer">
-            <p className="register__footer-text">
-              Already have an account?{' '}
-              <Link to="/login" className="register__footer-link">
-                Sign in
+          <div className={styles.footer}>
+            <p className={styles.footerText}>
+              Đã có tài khoản?{' '}
+              <Link to="/login" className={styles.footerLink}>
+                Đăng nhập
               </Link>
             </p>
           </div>
