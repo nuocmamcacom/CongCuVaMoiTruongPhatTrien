@@ -124,83 +124,6 @@ const login = async (req, res) => {
     }
 };
 
-const searchUsers = async (req, res) => {
-    try {
-        const searchTerm = req.query.q;
-        const currentUserId = req.user.user_id;
-
-        if (!searchTerm) {
-            return res.status(400).json({
-                success: false,
-                message: 'Search term is required'
-            });
-        }
-
-        // Use text search or regex
-        const users = await User.find({
-            _id: { $ne: currentUserId },
-            $or: [
-                { username: { $regex: searchTerm, $options: 'i' } },
-                { email: { $regex: searchTerm, $options: 'i' } },
-                { full_name: { $regex: searchTerm, $options: 'i' } }
-            ]
-        })
-        .select('_id username email full_name')
-        .sort({ username: 1 })
-        .limit(20);
-
-        // Transform to match frontend expectations
-        const formattedUsers = users.map(user => ({
-            user_id: user._id,
-            username: user.username,
-            email: user.email,
-            full_name: user.full_name
-        }));
-
-        res.json({
-            success: true,
-            data: formattedUsers
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message || 'Internal server error'
-        });
-    }
-};
-
-const getUserById = async (req, res) => {
-    try {
-        const userId = req.params.id;
-
-        const user = await User.findById(userId)
-            .select('_id username email full_name');
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'User not found'
-            });
-        }
-
-        res.json({
-            success: true,
-            data: {
-                user_id: user._id,
-                username: user.username,
-                email: user.email,
-                full_name: user.full_name
-            }
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message || 'Internal server error'
-        });
-    }
-};
 
 // Google OAuth handlers
 const googleAuth = (req, res, next) => {
@@ -250,5 +173,5 @@ const googleCallback = (req, res, next) => {
     })(req, res, next);
 };
 
-module.exports = { register, login, getUserById, searchUsers, googleAuth, googleCallback };
+module.exports = { register, login, googleAuth, googleCallback };
 
