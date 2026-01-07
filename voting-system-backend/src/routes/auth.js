@@ -1,14 +1,14 @@
 const express = require('express');
-const { register, login, googleAuth, googleCallback } = require('../controllers/authController');
-const { validateRegister, validateLogin } = require('../middleware/validation');
+const authController = require('../controllers/authController');
+const { validateRegister, validateLogin } = require('../middleware/authValidation');
 
 const router = express.Router();
 
-router.post('/register', validateRegister, register);
-router.post('/login', validateLogin, login);
+router.post('/register', validateRegister, authController.register);
+router.post('/login', validateLogin, authController.login);
 
 // Google OAuth routes
-router.get('/google', googleAuth);
-router.get('/google/callback', googleCallback);
+router.get('/google', authController.googleAuth);
+router.get('/google/callback', authController.googleCallback);
 
 module.exports = router;
