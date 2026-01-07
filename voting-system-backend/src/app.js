@@ -6,7 +6,9 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const passport = require('passport');
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+const dotenv =require('dotenv');
+
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 // Import passport configuration
 require('./config/passport');
