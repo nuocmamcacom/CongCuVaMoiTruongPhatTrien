@@ -7,19 +7,11 @@ const {
     exportPollToExcel 
 } = require('../controllers/pollController');
 const { auth } = require('../middleware/auth');
-const { validateCreatePoll, validateVote } = require('../middleware/validation');
+const { validateCreatePoll, validateVote } = require('../middleware/pollValidation');
+const { validatePollId } = require('../middleware/validateId');
 const { checkCreator } = require('../middleware/checkCreator');
 
 const router = express.Router();
-
-// Middleware để validate poll_id
-const validatePollId = (req, res, next) => {
-    const { poll_id } = req.params;
-    if (!poll_id || typeof poll_id !== 'string' || poll_id.length !== 24) {
-        return res.status(400).json({ message: 'Invalid poll_id. Must be a valid ObjectId.' });
-    }
-    next();
-};
 
 // Tất cả routes cần authentication
 router.use(auth);

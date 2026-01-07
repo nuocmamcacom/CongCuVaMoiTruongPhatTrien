@@ -1,6 +1,6 @@
 const express = require('express');
 const { register, login, googleAuth, googleCallback } = require('../controllers/authController');
-const { validateRegister, validateLogin } = require('../middleware/validation');
+const { validateRegister, validateLogin } = require('../middleware/authValidation');
 
 const router = express.Router();
 

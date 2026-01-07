@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { auth } = require('../middleware/auth');
+const { validateUserId } = require('../middleware/validateId');
 // Import từ controller mới
 const userController = require('../controllers/userController');
 
@@ -15,6 +16,6 @@ router.get('/', auth, userController.getAllUsers);
 router.put('/profile', auth, userController.updateProfile);
 
 // GET user by ID (Luôn để cuối cùng để tránh conflict route)
-router.get('/:id', auth, userController.getUserById);
+router.get('/:id', auth, validateUserId, userController.getUserById);
 
 module.exports = router;
