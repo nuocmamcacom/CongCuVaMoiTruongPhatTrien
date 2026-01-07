@@ -1,26 +1,26 @@
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const passport = require('passport');
-const path = require('path');
-const dotenv =require('dotenv');
+const express = require("express");
+const http = require("http");
+const socketIo = require("socket.io");
+const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const passport = require("passport");
+const path = require("path");
+const dotenv = require("dotenv");
 
-dotenv.config({ path: path.join(__dirname, '..', '.env') });
+dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
 // Import passport configuration
-require('./config/passport');
+require("./config/passport");
 
-const connectDB = require('./config/database');
-const { initializeSocket } = require('./services/socketService');
+const connectDB = require("./config/database");
+const { initializeSocket } = require("./services/socketService");
 
 // Import routes
-const authRoutes = require('./routes/auth');
-const pollRoutes = require('./routes/polls');
-const userRoutes = require('./routes/users');
-const formRoutes = require('./routes/forms');
+const authRoutes = require("./routes/auth");
+const pollRoutes = require("./routes/polls");
+const userRoutes = require("./routes/users");
+const formRoutes = require("./routes/forms");
 
 const app = express();
 const server = http.createServer(app);
@@ -30,31 +30,40 @@ connectDB();
 
 // Socket.IO setup
 const io = socketIo(server, {
-    cors: {
-        origin: [
-            process.env.CORS_ORIGIN,
-            'http://localhost:3000', 
-            'http://localhost:3001'
-        ],
-        methods: ["GET", "POST"],
-        credentials: true
-    }
+  cors: {
+    origin: [
+      process.env.CORS_ORIGIN,
+      "http://localhost:3000",
+      "http://localhost:3001",
+    ],
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
 });
 
 // Initialize socket service
 initializeSocket(io);
 
-// Middleware
-app.use(helmet());
-app.use(cors({
-    origin: [
-        process.env.CORS_ORIGIN,
-        'http://localhost:3000', 
-        'http://localhost:3001'
-    ],
-    credentials: true
-}));
-app.use(express.json({ limit: '10mb' }));
+const corsOptions = {
+  origin: [
+    process.env.CORS_ORIGIN,
+    "http://localhost:3000",
+    "http://localhost:3001",
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
+
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  })
+);
+
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 // Passport middleware
@@ -62,43 +71,42 @@ app.use(passport.initialize());
 
 // Rate limiting
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
-    message: 'Too many requests from this IP, please try again later.'
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: "Too many requests from this IP, please try again later.",
 });
-app.use('/api/', limiter);
+app.use("/api/", limiter);
 
 // Trust proxy for accurate IP addresses
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/polls', pollRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/forms', formRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/polls", pollRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/forms", formRoutes);
 
 // Health check
-app.get('/api/health', (req, res) => {
-    res.json({ 
-        status: 'OK', 
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime()
-    });
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "OK",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    res.status(500).json({ message: 'Something went wrong!' });
+  res.status(500).json({ message: "Something went wrong!" });
 });
 
 // 404 handler
-app.use('*', (req, res) => {
-    res.status(404).json({ message: 'Route not found' });
+app.use("*", (req, res) => {
+  res.status(404).json({ message: "Route not found" });
 });
 
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
-});
+server.listen(PORT, () => {});
 
 module.exports = { app, server };
