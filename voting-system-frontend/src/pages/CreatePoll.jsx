@@ -157,8 +157,8 @@ const CreatePoll = () => {
               Về Dashboard
             </button>
             <div>
-              <h1 className={styles.title}>Tạo bình chọn mới</h1>
-              <p className={styles.subtitle}>Tạo cuộc bình chọn để thu thập ý kiến từ cộng đồng</p>
+              <h1 className={styles.pageTitle}>Tạo bình chọn mới</h1>
+              <p className={styles.pageSubtitle}>Tạo cuộc bình chọn để thu thập ý kiến từ cộng đồng</p>
             </div>
           </div>
         </div>
@@ -305,13 +305,13 @@ const CreatePoll = () => {
               <h2 className={styles.sectionTitle}>Tìm người tham gia</h2>
               
               <div className={styles.searchField}>
-                <div className={styles.searchInput}>
+                <div className={styles.searchInputContainer}>
                   <svg className={styles.searchIcon} width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                   </svg>
                   <input
                     type="text"
-                    className={styles.input}
+                    className={styles.searchInput}
                     placeholder="Tìm theo tên, email hoặc username..."
                     value={searchTerm}
                     onChange={(e) => {
@@ -327,7 +327,7 @@ const CreatePoll = () => {
                       <button
                         key={user.user_id}
                         type="button"
-                        className={styles.searchResult}
+                        className={styles.searchResultItem}
                         onClick={() => addParticipant(user)}
                       >
                         <div className={styles.userAvatar}>
@@ -345,11 +345,11 @@ const CreatePoll = () => {
 
               {/* Selected Participants */}
               {participants.length > 0 && (
-                <div className={styles.participants}>
+                <div className={styles.selectedParticipants}>
                   <h3 className={styles.participantsTitle}>Người tham gia đã chọn ({participants.length})</h3>
                   <div className={styles.participantsList}>
                     {participants.map((participant) => (
-                      <div key={participant.user_id} className={styles.participant}>
+                      <div key={participant.user_id} className={styles.participantCard}>
                         <div className={styles.userAvatar}>
                           {participant.username.charAt(0).toUpperCase()}
                         </div>

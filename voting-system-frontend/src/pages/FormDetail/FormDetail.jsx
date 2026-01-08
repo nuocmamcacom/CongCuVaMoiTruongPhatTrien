@@ -215,14 +215,14 @@ const FormDetail = () => {
                             </div>
                         </div>
                         {authState?.user?.user_id && form.creator_id && 
-                         String(authState.user.user_id) === String(form.creator_id) && (
+                         (String(authState.user.user_id) === String(form.creator_id._id || form.creator_id)) && (
                             <button
                                 onClick={handleExportToExcel}
                                 disabled={exporting}
-                                className={styles.btnExport}
+                                className={styles.exportButton}
                                 title="Xuất kết quả khảo sát sang file Excel"
                             >
-                                {exporting ? '⏳ Đang xuất...' : '📥 Xuất Excel'}
+                                {exporting ? '⏳ Đang xuất...' : '📊 Xuất Excel'}
                             </button>
                         )}
                     </div>
